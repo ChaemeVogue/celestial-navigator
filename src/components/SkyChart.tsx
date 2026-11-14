@@ -1,7 +1,5 @@
-import { useRef, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { Target } from '../api/types'
-import { useElementWidth } from '../hooks/useElementWidth'
-import { placeLabels, type Box, type LabelItem } from '../utils/labelLayout'
 import {
   eclipticLatitude,
   eclipticToEquatorial,
@@ -94,18 +92,6 @@ const BACKGROUND_STARS = (() => {
 const HOUR_LABELS = [21, 15, 9, 3].map((h) => ({ text: toRoman(h), ...toPercent(h * 15, 0) }))
 const MILKY_WAY_LABEL = toPercent(...galacticPlaneToEquatorial(100))
 
-// Which planet names win when space is tight (most familiar first)
-const LABEL_PRIORITY: BodyId[] = [
-  'sun',
-  'moon',
-  'jupiter',
-  'saturn',
-  'mars',
-  'venus',
-  'mercury',
-  'uranus',
-  'neptune',
-]
 // Drawing order: big icons first, so a small planet in conjunction stays visible on top
 const DRAW_ORDER: BodyId[] = [
   'sun',
@@ -118,7 +104,6 @@ const DRAW_ORDER: BodyId[] = [
   'mars',
   'mercury',
 ]
-const NARROW_CHART = 520 // matches the container query in SkyChart.css, where names hide
 
 const describeLatitude = (lat: number) =>
   Math.abs(lat) < 0.5
@@ -138,10 +123,6 @@ function Flourish({ className }: { className: string }) {
 }
 
 export default function SkyChart({ targets, selectedTarget, bodies, footer, onSelect }: Props) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const width = useElementWidth(mapRef)
-  const height = (width * VIEW_H) / VIEW_W
-
   const placed = targets.map((t) => ({ target: t, ...toPercent(t.ra, t.dec) }))
   const placedBodies = bodies
     .map((b) => ({ body: b, ...toPercent(b.ra, b.dec) }))
@@ -149,43 +130,9 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
   const crowdedTarget = (left: number, top: number) =>
     placed.some((o) => o.left > left && o.left - left < 8 && Math.abs(o.top - top) < 7)
 
-  // Planet names: in pixels, avoid every star, planet and target name, in priority order.
-  const bodySide = new Map<BodyId, string>()
-  if (width > NARROW_CHART) {
-    const px = (left: number, top: number) => ({ x: (left / 100) * width, y: (top / 100) * height })
-    const iconR = Math.min(16, Math.max(11, width * 0.016)) // half the icon size in SkyChart.css
-    const obstacles: Box[] = []
-    for (const { target, left, top } of placed) {
-      const { x, y } = px(left, top)
-      obstacles.push({ x: x - 7, y: y - 7, w: 14, h: 14 })
-      const w = target.messier.length * 12
-      obstacles.push(
-        crowdedTarget(left, top)
-          ? { x: x - w / 2, y: y - 26, w, h: 16 }
-          : { x: x + 12, y: y - 8, w, h: 16 },
-      )
-    }
-    for (const { left, top } of placedBodies) {
-      const { x, y } = px(left, top)
-      obstacles.push({ x: x - iconR, y: y - iconR, w: iconR * 2, h: iconR * 2 })
-    }
-    const ordered = [...placedBodies].sort(
-      (a, b) => LABEL_PRIORITY.indexOf(a.body.id) - LABEL_PRIORITY.indexOf(b.body.id),
-    )
-    const items: LabelItem[] = ordered.map(({ body, left, top }) => ({
-      ...px(left, top),
-      r: iconR,
-      w: body.name.length * 8.4 + 2,
-      h: 18,
-    }))
-    // A label starts just outside its own icon, so the icon never blocks its own name.
-    const sides = placeLabels(items, obstacles, { x: 0, y: 0, w: width, h: height })
-    ordered.forEach(({ body }, i) => bodySide.set(body.id, sides[i] ?? 'hidden'))
-  }
-
   return (
     <figure className="sky-chart">
-      <div className="sky-chart__map" ref={mapRef}>
+      <div className="sky-chart__map">
         <svg
           className="sky-chart__svg"
           viewBox={`${-PAD_X} ${-PAD_Y} ${VIEW_W} ${VIEW_H}`}
@@ -299,7 +246,8 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
         {/* Planets sit under the target stars, so a click on a target always wins */}
         <div className="sky-chart__bodies">
           {placedBodies.map(({ body, left, top }) => {
-            const side = bodySide.get(body.id) ?? 'right'
+            // Names show on hover; near the right edge they open to the left
+            const side = left > 80 ? 'left' : 'right'
             return (
               <span
                 key={body.id}

@@ -21,7 +21,7 @@
 
 .story__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--gap);
   margin: 36px 0 0;
   padding: 0;
@@ -72,14 +72,15 @@
 .story__button {
   min-height: var(--tap);
   margin-top: auto;
-  padding: 0 22px;
+  padding: 0 16px;
+  white-space: nowrap;
   background: var(--brass);
   border: 0;
   font-family: var(--font-ui);
   font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: var(--tracking-label);
+  letter-spacing: 2px;
   color: var(--bg);
 }
 
@@ -122,6 +123,19 @@
 
 .story__fill {
   fill: url(#story-hatch);
+}
+
+.story__leader {
+  fill: none;
+  stroke: var(--brass-light);
+  stroke-width: 0.5;
+  stroke-dasharray: 1.5 1.5;
+}
+
+.story__orbit {
+  fill: none;
+  stroke: rgba(201, 165, 90, 0.35);
+  stroke-width: 0.5;
 }
 
 .story__ray {

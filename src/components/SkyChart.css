@@ -137,6 +137,16 @@
   pointer-events: none;
 }
 
+/* The targets layer covers the whole chart; let the pointer through to the planets
+   underneath everywhere except on the target stars themselves */
+.sky-chart__targets {
+  pointer-events: none;
+}
+
+.sky-chart__target {
+  pointer-events: auto;
+}
+
 .sky-chart__hour {
   position: absolute;
   transform: translate(-50%, -125%);
@@ -171,9 +181,14 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: clamp(22px, 3.2cqw, 32px);
+  width: clamp(26px, 3.8cqw, 38px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
+}
+
+/* Pointing at a planet brings it forward, enlarges it and shows its name */
+.sky-chart__body:hover {
+  z-index: 1;
 }
 
 .planet-icon {
@@ -181,6 +196,11 @@
   height: 100%;
   overflow: visible;
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
+  transition: transform 0.2s ease;
+}
+
+.sky-chart__body:hover .planet-icon {
+  transform: scale(1.4);
 }
 
 .planet-icon__defs {
@@ -188,8 +208,12 @@
 }
 
 .sky-chart__body-name {
+  display: none;
   position: absolute;
-  left: calc(100% + 1px);
+  left: calc(100% + 8px);
+  padding: 3px 8px 4px;
+  background: rgba(6, 10, 20, 0.85);
+  border: 1px solid var(--border-faint);
   font-family: var(--font-note);
   font-style: italic;
   font-size: 18px;
@@ -197,36 +221,14 @@
   color: var(--text);
   white-space: nowrap;
   pointer-events: none;
-  text-shadow:
-    0 0 3px var(--sky-outer),
-    0 0 6px var(--sky-outer);
 }
 
 .sky-chart__body--label-left .sky-chart__body-name {
-  right: calc(100% + 2px);
+  right: calc(100% + 8px);
   left: auto;
 }
 
-.sky-chart__body--label-above .sky-chart__body-name,
-.sky-chart__body--label-below .sky-chart__body-name {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.sky-chart__body--label-above .sky-chart__body-name {
-  bottom: calc(100% + 2px);
-}
-
-.sky-chart__body--label-below .sky-chart__body-name {
-  top: calc(100% + 2px);
-}
-
-/* No room for this name right now: it shows when you point at the planet */
-.sky-chart__body--label-hidden .sky-chart__body-name {
-  display: none;
-}
-
-.sky-chart__body--label-hidden:hover .sky-chart__body-name {
+.sky-chart__body:hover .sky-chart__body-name {
   display: block;
 }
 
@@ -362,12 +364,6 @@
   }
   .sky-chart__curve-label {
     font-size: 15px;
-  }
-  .sky-chart__body-name {
-    display: none;
-  }
-  .sky-chart__body:hover .sky-chart__body-name {
-    display: block;
   }
   .sky-chart__hour {
     display: none;

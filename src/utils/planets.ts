@@ -168,3 +168,17 @@ export function skyBodies(date: Date): BodyPosition[] {
   ]
   return positions.map(([id, [ra, dec]]) => ({ id, name: NAMES[id], ra, dec }))
 }
+
+export type OrbitId = 'mercury' | 'venus' | 'earth' | 'mars' | 'jupiter' | 'saturn'
+export type OrbitPosition = { id: OrbitId; x: number; y: number }
+
+// The solar system seen from above (ecliptic plane, AU, Sun at the origin), for the
+// "Where's Earth?" diagram. Mercury out to Saturn, plus Earth.
+export function topDownPositions(date: Date): OrbitPosition[] {
+  const T = centuries(date)
+  const ids: OrbitId[] = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn']
+  return ids.map((id) => {
+    const [x, y] = heliocentric(ELEMENTS[id], T)
+    return { id, x, y }
+  })
+}

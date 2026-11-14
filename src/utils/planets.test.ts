@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { skyBodies } from './planets'
+import { skyBodies, topDownPositions } from './planets'
 
 // Reference positions from astropy's built-in ephemeris (get_body), [ra, dec] in degrees.
 const REFERENCE: Record<string, Record<string, [number, number]>> = {
@@ -61,5 +61,17 @@ describe('skyBodies', () => {
       'Uranus',
       'Neptune',
     ])
+  })
+})
+
+describe('topDownPositions', () => {
+  it('puts each planet at its distance from the Sun', () => {
+    const distance = Object.fromEntries(
+      topDownPositions(new Date('2026-01-01T00:00:00Z')).map((p) => [p.id, Math.hypot(p.x, p.y)]),
+    )
+    expect(distance.earth).toBeCloseTo(0.983, 2) // near perihelion in early January
+    expect(distance.mercury).toBeGreaterThan(0.3)
+    expect(distance.mercury).toBeLessThan(0.47)
+    expect(distance.saturn).toBeGreaterThan(9)
   })
 })

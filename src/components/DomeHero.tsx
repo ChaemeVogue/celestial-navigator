@@ -19,8 +19,9 @@ const DAY_MS = 86400000
 // The slider covers SPHEREx's mission so far: launch (11 March 2025) to two years on.
 const MISSION_START = Date.UTC(2025, 2, 11)
 const MISSION_DAYS = 730
-const PLAY_STEP_DAYS = 2
-const PLAY_INTERVAL_MS = 60
+// About a week per second: slow enough to follow the Moon and see Mars drift
+const PLAY_STEP_DAYS = 1
+const PLAY_INTERVAL_MS = 140
 
 const todayIndex = () =>
   Math.min(MISSION_DAYS, Math.max(0, Math.round((Date.now() - MISSION_START) / DAY_MS)))
@@ -40,7 +41,7 @@ export default function DomeHero({
   const date = new Date(MISSION_START + day * DAY_MS)
   const bodies = useMemo(() => skyBodies(new Date(MISSION_START + day * DAY_MS)), [day])
 
-  // Play sweeps the date forward, a couple of days per tick, and stops at the end.
+  // Play sweeps the date forward a day per tick and stops at the end.
   useEffect(() => {
     if (!playing) return
     const timer = setInterval(() => {

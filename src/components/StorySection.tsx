@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { topDownPositions } from '../utils/planets'
 import './StorySection.css'
 
 type Props = {
@@ -107,6 +108,64 @@ function EclipticArt() {
   )
 }
 
+// Where's Earth: the solar system from above, planets where they are today. Orbits use a
+// square-root scale so the inner planets aren't lost next to Saturn.
+const ORBIT_AU = {
+  mercury: 0.387,
+  venus: 0.723,
+  earth: 1,
+  mars: 1.524,
+  jupiter: 5.203,
+  saturn: 9.537,
+}
+const ORBIT_COLOURS = {
+  mercury: '#B9B3AA',
+  venus: '#F2E2B3',
+  earth: '#5AA0FF',
+  mars: '#D9603B',
+  jupiter: '#D8B48A',
+  saturn: '#E8CF8E',
+}
+const ORBIT_SIZES = { mercury: 1.6, venus: 2, earth: 2.6, mars: 1.8, jupiter: 3.6, saturn: 3.2 }
+const orbitRadius = (au: number) => (50 / Math.sqrt(ORBIT_AU.saturn)) * Math.sqrt(au)
+
+// Worked out once, when the page loads
+const TODAY_ORBITS = topDownPositions(new Date())
+
+function EarthArt() {
+  const planets = TODAY_ORBITS.map((p) => {
+    const r = orbitRadius(ORBIT_AU[p.id])
+    const angle = Math.atan2(p.y, p.x)
+    return { ...p, cx: 80 + r * Math.cos(angle), cy: 60 - r * Math.sin(angle) }
+  })
+  const earth = planets.find((p) => p.id === 'earth')!
+  return (
+    <svg viewBox="0 0 160 120" className="story__art" aria-hidden="true">
+      {Object.values(ORBIT_AU).map((au) => (
+        <circle key={au} className="story__orbit" cx="80" cy="60" r={orbitRadius(au)} />
+      ))}
+      <circle cx="80" cy="60" r="4" fill="#FFD27A" />
+      {planets.map((p) => (
+        <circle key={p.id} cx={p.cx} cy={p.cy} r={ORBIT_SIZES[p.id]} fill={ORBIT_COLOURS[p.id]} />
+      ))}
+      <circle className="story__ring" cx={earth.cx} cy={earth.cy} r="6" />
+      {/* label at the top or bottom edge, clear of the inner orbits, with a leader line */}
+      <path
+        className="story__leader"
+        d={`M${earth.cx} ${earth.cy + (earth.cy > 60 ? 6 : -6)} V${earth.cy > 60 ? 108 : 14}`}
+      />
+      <text
+        className="story__plate-label"
+        x={Math.min(132, Math.max(28, earth.cx))}
+        y={earth.cy > 60 ? 116 : 10}
+        textAnchor="middle"
+      >
+        YOU ARE HERE
+      </text>
+    </svg>
+  )
+}
+
 // Your turn: an armillary sphere, the astronomer's instrument
 function ArmillaryArt() {
   return (
@@ -151,6 +210,12 @@ const CARDS: Card[] = [
     art: <EclipticArt />,
     text: 'Planets and asteroids travel along one band of sky. Targets near it are the best places to catch something moving.',
   },
+  {
+    numeral: 'IV',
+    title: 'Where’s Earth?',
+    art: <EarthArt />,
+    text: 'Earth isn’t on the sky chart because we’re standing on it. The chart is the view from here, looking out.',
+  },
 ]
 
 export default function StorySection({ onChooseStar }: Props) {
@@ -175,7 +240,7 @@ export default function StorySection({ onChooseStar }: Props) {
         <li className="story__card story__card--cta">
           <ArmillaryArt />
           <h3 className="story__title">
-            <span className="story__numeral">IV</span> Your turn
+            <span className="story__numeral">V</span> Your turn
           </h3>
           <p className="story__text">
             Pick a star, blink the passes, and look for anything that moves.
