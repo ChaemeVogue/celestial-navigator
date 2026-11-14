@@ -40,6 +40,14 @@
     "dec": -13.835
   },
   {
+    "id": "barnard",
+    "messier": "GJ 699",
+    "name": "Barnard’s Star",
+    "kind": "nearby red dwarf, the fastest-moving star in our sky",
+    "ra": 269.44626,
+    "dec": 4.76835
+  },
+  {
     "id": "m31",
     "messier": "M31",
     "name": "Andromeda Galaxy",

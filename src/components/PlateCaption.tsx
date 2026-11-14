@@ -16,6 +16,9 @@ const withArticle = (phrase: string) => `${/^[aeiou]/i.test(phrase) ? 'an' : 'a'
 // "Pass II" -> "pass II" (keeps the numeral), "Short visit" -> "short visit"
 const lowerFirst = (label: string) => label.charAt(0).toLowerCase() + label.slice(1)
 
+// "the Pinwheel Galaxy", but not "the Barnard’s Star": possessive names take no article
+const withThe = (name: string) => (/['’]s\b/.test(name) ? name : `the ${name}`)
+
 export default function PlateCaption({ target, passesData, passIndex, colourKey, band }: Props) {
   const pass = passesData?.passes[passIndex]
 
@@ -34,10 +37,9 @@ export default function PlateCaption({ target, passesData, passIndex, colourKey,
   return (
     <div className="plate-caption">
       <p className="plate-caption__text">
-        Plate {passIndex + 1}. The field around the {target.name} ({target.messier}),{' '}
+        Plate {passIndex + 1}. The field around {withThe(target.name)} ({target.messier}),{' '}
         {withArticle(target.kind)}, shown at {lowerFirst(pass.label)} ({passIndex + 1} of {total}).
-        It and the background stars stay fixed; anything nearer that moves will shift between
-        passes.
+        Distant stars and galaxies stay fixed; anything nearer that moves will shift between passes.
         {band && ` Showing detector ${band.band} alone (${band.wavelength}), in greyscale.`}
         {passesData.simulated && ' These are simulated placeholder images, not SPHEREx data yet.'}
       </p>

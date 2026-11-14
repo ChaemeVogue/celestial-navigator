@@ -1,0 +1,7 @@
+{
+  "_pending": "Placeholder until pipeline/run.py barnard finishes (IRSA was down on 15 Nov 2026). to_app.py overwrites this file.",
+  "targetId": "barnard",
+  "fieldSizeDeg": 0.1,
+  "passes": [],
+  "candidates": []
+}
