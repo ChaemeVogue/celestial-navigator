@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { eclipticLatitude, eclipticToEquatorial, galacticPlaneToEquatorial, hammer } from './sky'
+import {
+  angularSeparation,
+  eclipticLatitude,
+  eclipticToEquatorial,
+  galacticPlaneToEquatorial,
+  hammer,
+} from './sky'
 
 describe('eclipticLatitude', () => {
   it('matches the targets we processed (within precession, ~0.3°)', () => {
@@ -50,5 +56,15 @@ describe('hammer', () => {
     expect(hammer(359.9999, 0).x).toBeCloseTo(-1, 3)
     expect(hammer(123, 90).y).toBeCloseTo(1, 6)
     expect(hammer(123, -90).y).toBeCloseTo(-1, 6)
+  })
+})
+
+describe('angularSeparation', () => {
+  it('measures small and large angles', () => {
+    expect(angularSeparation(10, 20, 10, 20)).toBe(0)
+    expect(angularSeparation(0, 0, 90, 0)).toBeCloseTo(90, 6)
+    expect(angularSeparation(359.9, 0, 0.1, 0)).toBeCloseTo(0.2, 6) // across 0h
+    // Barnard's Star: its J2000 position vs where it is in 2026, about 4.5′
+    expect(angularSeparation(269.45208, 4.69339, 269.44626, 4.76835) * 60).toBeCloseTo(4.5, 1)
   })
 })

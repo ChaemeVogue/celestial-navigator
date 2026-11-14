@@ -1,10 +1,26 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getColourKey, getPasses, getTargets } from '../api/client'
 import type { ColourKeyEntry, PassesResponse, Target } from '../api/types'
+import { angularSeparation } from '../utils/sky'
 
 export type LoadStatus = 'loading' | 'ready' | 'error'
 
 const PLAY_INTERVAL_MS = 800
+// Typed coordinates this close to a target open that target (the field is 0.1° wide;
+// fast movers like Barnard's Star sit several arcminutes from their catalogue position).
+export const MATCH_RADIUS_DEG = 0.1
+
+export type SkySpot = { ra: number; dec: number }
+
+// The closest target to a spot, and how far away it is in degrees
+export function nearestTarget(targets: Target[], spot: SkySpot) {
+  let best: { target: Target; distance: number } | null = null
+  for (const target of targets) {
+    const distance = angularSeparation(spot.ra, spot.dec, target.ra, target.dec)
+    if (!best || distance < best.distance) best = { target, distance }
+  }
+  return best
+}
 
 // Owns all app state (plan.md section 6). Components only read from it.
 export function useExplorer() {
@@ -20,6 +36,8 @@ export function useExplorer() {
   const [passIndex, setPassIndexState] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [colourKey, setColourKey] = useState<ColourKeyEntry[]>([])
+  // Coordinates someone typed that don't match a processed target (null otherwise)
+  const [customSpot, setCustomSpot] = useState<SkySpot | null>(null)
   // null = colour composite; otherwise a detector id ("D6"). Kept across target changes.
   const [band, setBand] = useState<string | null>(null)
 
@@ -85,12 +103,29 @@ export function useExplorer() {
   }, [isPlaying, passCount, selectedId])
 
   const selectTarget = useCallback((id: string) => {
+    setCustomSpot(null)
     setIsPlaying(false)
     setPassIndexState(0)
     setPassesData(null)
     setPassesStatus('loading')
     setSelectedId(id)
   }, [])
+
+  // Typed coordinates: open the matching target, or mark the spot as uncharted.
+  const goToCoordinates = useCallback(
+    (spot: SkySpot) => {
+      const nearest = nearestTarget(targets, spot)
+      if (nearest && nearest.distance <= MATCH_RADIUS_DEG) {
+        selectTarget(nearest.target.id)
+        return
+      }
+      setIsPlaying(false)
+      setSelectedId(null)
+      setPassesData(null)
+      setCustomSpot(spot)
+    },
+    [targets, selectTarget],
+  )
 
   // Manual steps pause playback.
   const setPassIndex = useCallback(
@@ -122,6 +157,8 @@ export function useExplorer() {
     retryTargets,
     selectedTarget,
     selectTarget,
+    customSpot,
+    goToCoordinates,
     passesData,
     passesStatus,
     retryPasses,

@@ -186,6 +186,14 @@
   color: var(--brass-light);
 }
 
+/* Coordinates need lowercase h/m/s, which the engraved capitals font doesn't have */
+.dome__instruction-coords {
+  font-family: var(--font-data);
+  font-size: 0.85em;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 .dome__list {
   display: flex;
   flex-wrap: wrap;
@@ -237,6 +245,78 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
+  color: var(--brass-light);
+}
+
+/* ---------- Coordinates ---------- */
+
+.dome__coords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: var(--fs-note-small);
+  color: var(--text-faint);
+}
+
+.dome__coords-field {
+  display: flex;
+}
+
+.dome__coords-input {
+  width: min(64vw, 300px);
+  min-height: var(--tap);
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border-faint);
+  border-right: 0;
+  border-radius: 0;
+  font-family: var(--font-data);
+  font-style: normal;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+
+.dome__coords-input::placeholder {
+  color: var(--text-faint);
+  opacity: 1;
+}
+
+.dome__coords-input:hover,
+.dome__coords-input:focus {
+  border-color: var(--brass);
+}
+
+.dome__coords-input[aria-invalid='true'] {
+  border-color: var(--brass-light);
+}
+
+.dome__coords-go {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0 16px;
+  background: var(--brass);
+  border: 1px solid var(--brass);
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--bg);
+}
+
+.dome__coords-go:hover {
+  background: var(--brass-light);
+}
+
+.dome__coords-error {
+  flex-basis: 100%;
+  font-family: var(--font-note);
+  font-size: var(--fs-note-small);
   color: var(--brass-light);
 }
 

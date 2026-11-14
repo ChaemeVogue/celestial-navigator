@@ -52,3 +52,11 @@ export function hammer(ra: number, dec: number): { x: number; y: number } {
   const z = Math.sqrt(1 + Math.cos(d) * Math.cos(l / 2))
   return { x: (Math.cos(d) * Math.sin(l / 2)) / z, y: Math.sin(d) / z }
 }
+
+// Angle between two points on the sky (haversine, stable for small separations)
+export function angularSeparation(ra1: number, dec1: number, ra2: number, dec2: number): number {
+  const s =
+    Math.sin(((dec2 - dec1) * DEG) / 2) ** 2 +
+    Math.cos(dec1 * DEG) * Math.cos(dec2 * DEG) * Math.sin(((ra2 - ra1) * DEG) / 2) ** 2
+  return (2 * Math.asin(Math.min(1, Math.sqrt(s)))) / DEG
+}

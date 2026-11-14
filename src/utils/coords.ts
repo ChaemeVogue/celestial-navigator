@@ -55,3 +55,49 @@ export function toRoman(n: number): string {
   }
   return out
 }
+
+export type ParsedCoordinates = { ra: number; dec: number } | { error: string }
+
+const NUM = String.raw`(\d+(?:\.\d+)?)`
+const SIGNED = String.raw`([+-]?\d+(?:\.\d+)?)`
+// "08h55m10.831s -7d14m42.53s", "17 57 48.97 +04 41 36.1", "17:57:48.97 +04:41:36.1"
+const SEXAGESIMAL = new RegExp(
+  String.raw`^${NUM}\s*[h:\s]\s*${NUM}\s*[m:\s]\s*${NUM}\s*s?\s+([+-]?)${NUM}\s*[d°:\s]\s*${NUM}\s*[m'′:\s]\s*${NUM}\s*["″s]?$`,
+  'i',
+)
+// "269.446 +4.768" (both in degrees)
+const DECIMAL = new RegExp(String.raw`^${SIGNED}\s+${SIGNED}$`)
+
+// Reads a typed RA/Dec pair: decimal degrees, or RA in hours and Dec in degrees
+// (h/m/s and d/m/s, colons or spaces). Returns degrees, or an error to show the user.
+export function parseCoordinates(input: string): ParsedCoordinates {
+  const text = input
+    .trim()
+    .replace(/[−–]/g, '-') // typographic minus signs
+    .replace(/\s*,\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+  if (!text) return { error: 'Enter a right ascension and a declination.' }
+
+  let ra: number
+  let dec: number
+  const sex = SEXAGESIMAL.exec(text)
+  const decimal = DECIMAL.exec(text)
+  if (sex) {
+    const [h, m, s, sign, d, dm, ds] = [sex[1], sex[2], sex[3], sex[4], sex[5], sex[6], sex[7]]
+    const parts = [m, s, dm, ds].map(Number)
+    if (parts.some((p) => p >= 60)) return { error: 'Minutes and seconds must be under 60.' }
+    if (Number(h) >= 24) return { error: 'Right ascension in hours must be under 24h.' }
+    ra = (Number(h) + parts[0] / 60 + parts[1] / 3600) * 15
+    dec = (sign === '-' ? -1 : 1) * (Number(d) + parts[2] / 60 + parts[3] / 3600)
+  } else if (decimal) {
+    ra = Number(decimal[1])
+    dec = Number(decimal[2])
+    if (ra < 0 || ra >= 360) return { error: 'Right ascension in degrees must be 0 to 360.' }
+  } else {
+    return {
+      error: 'Try “269.446 +4.768” (degrees) or “17h57m47s +04d46m06s”.',
+    }
+  }
+  if (dec < -90 || dec > 90) return { error: 'Declination must be between −90° and +90°.' }
+  return { ra, dec }
+}

@@ -16,6 +16,7 @@ type Props = {
   selectedTarget: Target | null
   bodies: BodyPosition[] // Sun, Moon and planets for the chosen date
   footer?: ReactNode // extra controls shown in the key row (the planet date)
+  spot?: { ra: number; dec: number } | null // typed coordinates, marked with a crosshair
   onSelect: (id: string) => void
 }
 
@@ -123,7 +124,15 @@ function Flourish({ className }: { className: string }) {
   )
 }
 
-export default function SkyChart({ targets, selectedTarget, bodies, footer, onSelect }: Props) {
+export default function SkyChart({
+  targets,
+  selectedTarget,
+  bodies,
+  footer,
+  spot,
+  onSelect,
+}: Props) {
+  const spotAt = spot ? toPercent(spot.ra, spot.dec) : null
   // The planet under the pointer. Its name tag is drawn on a layer above the targets, so a
   // nearby target star can't cover it (the planet itself stays beneath the targets).
   const [hoveredBody, setHoveredBody] = useState<BodyId | null>(null)
@@ -269,6 +278,20 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
             )
           })}
         </div>
+
+        {spotAt && (
+          <span
+            className="sky-chart__spot"
+            style={{ left: `${spotAt.left}%`, top: `${spotAt.top}%` }}
+            role="img"
+            aria-label="Your coordinates"
+          >
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="7" />
+              <path d="M16 2 V10 M16 22 V30 M2 16 H10 M22 16 H30" />
+            </svg>
+          </span>
+        )}
 
         <div className="sky-chart__targets" role="group" aria-label="Targets on the sky chart">
           {placed.map(({ target, left, top }) => {

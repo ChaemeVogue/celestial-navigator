@@ -81,8 +81,21 @@ takes up to a minute per detector and some downloads fail every run.
 
 - **Mover detection.** Medians remove anything that moves within a pass, and plain
   differences flag every bright star. See spherex-findings.md for what a detector needs.
-- **Target list.** Curated (a dozen to a few dozen, processed ahead of time) or on demand
-  with a wait of several minutes per new target.
+- **Any coordinates (the challenge's core ask).** The front end already accepts typed RA/Dec
+  and `?ra=&dec=` links; today it can only show processed targets. Proposed endpoint:
+
+  ```
+  GET /api/passes?ra=133.79513&dec=-7.24515
+    200 -> PassesResponse            already processed (cache hit)
+    202 -> { "status": "processing", "etaSeconds": 300 }   queued; poll again
+  ```
+
+  Process on demand with the pipeline steps, cache by rounded position (e.g. 0.01°),
+  and keep the curated targets pre-processed so the demo never waits.
+
+- **Fast movers need today's position.** Barnard's Star, Epsilon Indi B and WISE 0855
+  move arcseconds per year, so catalogue (J2000) positions are several arcminutes off.
+  Propagate with proper motion (astropy `apply_space_motion`) before cutting out.
 
 ## Connecting in development
 

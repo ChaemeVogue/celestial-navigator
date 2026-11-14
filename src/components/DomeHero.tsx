@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Target } from '../api/types'
-import type { LoadStatus } from '../hooks/useExplorer'
+import type { LoadStatus, SkySpot } from '../hooks/useExplorer'
+import { formatDec, formatRA, parseCoordinates } from '../utils/coords'
 import { formatDate } from '../utils/dates'
 import { skyBodies } from '../utils/planets'
 import SkyChart from './SkyChart'
@@ -10,7 +11,9 @@ type Props = {
   targets: Target[]
   targetsStatus: LoadStatus
   selectedTarget: Target | null
+  customSpot: SkySpot | null // typed coordinates with no processed target
   onSelect: (id: string) => void
+  onGoTo: (spot: SkySpot) => void
   onRetry: () => void
   onContinue: () => void // scroll to whatever comes next: the plate, or the story
 }
@@ -31,10 +34,15 @@ export default function DomeHero({
   targets,
   targetsStatus,
   selectedTarget,
+  customSpot,
   onSelect,
+  onGoTo,
   onRetry,
   onContinue,
 }: Props) {
+  const [coordsText, setCoordsText] = useState('')
+  const [coordsError, setCoordsError] = useState<string | null>(null)
+
   // Planets on the chart move with this date (days since launch)
   const [day, setDay] = useState(todayIndex)
   const [playing, setPlaying] = useState(false)
@@ -113,6 +121,7 @@ export default function DomeHero({
           targets={targets}
           selectedTarget={selectedTarget}
           bodies={bodies}
+          spot={customSpot}
           onSelect={onSelect}
           footer={dateControl}
         />
@@ -131,6 +140,13 @@ export default function DomeHero({
             {selectedTarget ? (
               <>
                 Now observing <strong>{selectedTarget.name}</strong>
+              </>
+            ) : customSpot ? (
+              <>
+                Uncharted spot{' '}
+                <strong className="dome__instruction-coords">
+                  {formatRA(customSpot.ra)} {formatDec(customSpot.dec)}
+                </strong>
               </>
             ) : (
               'Choose a star to begin'
@@ -156,10 +172,59 @@ export default function DomeHero({
             ))}
           </select>
         </label>
+
+        <form
+          className="dome__coords"
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault()
+            const parsed = parseCoordinates(coordsText)
+            if ('error' in parsed) {
+              setCoordsError(parsed.error)
+              return
+            }
+            setCoordsError(null)
+            onGoTo(parsed)
+          }}
+        >
+          <label htmlFor="coords-input">or enter coordinates</label>
+          <span className="dome__coords-field">
+            <input
+              id="coords-input"
+              className="dome__coords-input"
+              type="text"
+              inputMode="text"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder="e.g. 269.446 +4.768"
+              value={coordsText}
+              aria-invalid={coordsError ? true : undefined}
+              aria-describedby={coordsError ? 'coords-error' : undefined}
+              onChange={(e) => {
+                setCoordsText(e.target.value)
+                setCoordsError(null)
+              }}
+            />
+            <button type="submit" className="dome__coords-go">
+              Go
+            </button>
+          </span>
+          {coordsError && (
+            <p id="coords-error" className="dome__coords-error" role="alert">
+              {coordsError}
+            </p>
+          )}
+        </form>
       </div>
 
       <button type="button" className="dome__scroll" onClick={onContinue}>
-        <span>{selectedTarget ? 'Continue to the plate' : 'Scroll to learn more'}</span>
+        <span>
+          {selectedTarget
+            ? 'Continue to the plate'
+            : customSpot
+              ? 'Continue to the spot'
+              : 'Scroll to learn more'}
+        </span>
         <svg className="dome__chevron" viewBox="0 0 24 14" aria-hidden="true">
           <path d="M2 2 L12 12 L22 2" />
         </svg>

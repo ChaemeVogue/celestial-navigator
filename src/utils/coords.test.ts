@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDec, formatRA, toRoman } from './coords'
+import { formatDec, formatRA, parseCoordinates, toRoman } from './coords'
 
 describe('formatRA', () => {
   it('converts the mock targets', () => {
@@ -54,5 +54,42 @@ describe('formatDec', () => {
 describe('toRoman', () => {
   it('converts pass numbers', () => {
     expect([1, 2, 3, 4, 9, 14].map(toRoman)).toEqual(['I', 'II', 'III', 'IV', 'IX', 'XIV'])
+  })
+})
+
+describe('parseCoordinates', () => {
+  const close = (input: string, ra: number, dec: number) => {
+    const out = parseCoordinates(input)
+    if ('error' in out) throw new Error(out.error)
+    expect(out.ra).toBeCloseTo(ra, 4)
+    expect(out.dec).toBeCloseTo(dec, 4)
+  }
+
+  it('reads the challenge’s WISE 0855 coordinates', () => {
+    close('08h55m10.831s -7d14m42.53s', 133.795129, -7.245147)
+  })
+
+  it('reads spaces, colons and typographic symbols', () => {
+    close('17 57 48.97 +04 41 36.1', 269.454042, 4.693361)
+    close('17:57:48.97, +04:41:36.1', 269.454042, 4.693361)
+    close('08h 55m 10.831s −7° 14′ 42.53″', 133.795129, -7.245147)
+  })
+
+  it('keeps the sign of declinations just south of the equator', () => {
+    close('12 00 00 -00 30 00', 180, -0.5)
+  })
+
+  it('reads decimal degrees', () => {
+    close('269.446 +4.768', 269.446, 4.768)
+    close('56.75, 24.1167', 56.75, 24.1167)
+  })
+
+  it('explains what is wrong', () => {
+    expect(parseCoordinates('')).toHaveProperty('error')
+    expect(parseCoordinates('Pleiades')).toHaveProperty('error')
+    expect(parseCoordinates('400 10')).toHaveProperty('error')
+    expect(parseCoordinates('10 95')).toHaveProperty('error')
+    expect(parseCoordinates('25h00m00s +10d00m00s')).toHaveProperty('error')
+    expect(parseCoordinates('10h61m00s +10d00m00s')).toHaveProperty('error')
   })
 })
