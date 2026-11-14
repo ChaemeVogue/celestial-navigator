@@ -67,7 +67,7 @@
   background: transparent;
   border: 1px solid var(--border-soft);
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;

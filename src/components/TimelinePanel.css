@@ -53,7 +53,7 @@
 
 .timeline__pass-label {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -61,7 +61,7 @@
 .timeline__pass-date {
   margin-left: auto;
   font-family: var(--font-data);
-  font-size: 14px;
+  font-size: var(--fs-small);
   color: var(--text-muted);
 }
 
@@ -92,7 +92,7 @@
 .timeline__play {
   flex: 1;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
@@ -117,6 +117,6 @@
 }
 
 .timeline__pass--short .timeline__pass-label {
-  font-size: 12px;
+  font-size: var(--fs-label);
   color: var(--text-muted);
 }

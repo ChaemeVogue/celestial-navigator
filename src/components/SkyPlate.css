@@ -127,7 +127,7 @@
   padding: 6px 12px;
   background: rgba(10, 19, 36, 0.8);
   border: 1px solid var(--border-soft);
-  font-size: 12px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
@@ -142,7 +142,7 @@
   padding: 6px 12px;
   background: rgba(10, 19, 36, 0.8);
   border: 1px dashed var(--text-faint);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
@@ -158,7 +158,7 @@
   align-items: center;
   gap: 4px;
   font-family: var(--font-data);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
 }
 
@@ -190,7 +190,7 @@
   padding: 2px 6px;
   background: rgba(10, 19, 36, 0.75);
   font-family: var(--font-data);
-  font-size: 13px;
+  font-size: 15px;
   white-space: nowrap;
   color: var(--brass-light);
 }
@@ -219,7 +219,7 @@
   border: 1px solid var(--border-soft);
   font-family: var(--font-ui);
   font-style: normal;
-  font-size: 13px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
@@ -234,7 +234,7 @@
   .sky-plate__badge,
   .sky-plate__simulated {
     top: 8px;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 2px;
   }
   .sky-plate__badge {

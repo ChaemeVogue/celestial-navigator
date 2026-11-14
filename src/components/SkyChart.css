@@ -141,7 +141,7 @@
   position: absolute;
   transform: translate(-50%, -125%);
   font-family: var(--font-engraved);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 1px;
   color: var(--brass);
 }
@@ -151,7 +151,7 @@
   transform: translate(-50%, -150%);
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 15px;
+  font-size: 18px;
   white-space: nowrap;
   color: var(--text-faint);
 }
@@ -223,7 +223,7 @@
   position: absolute;
   left: calc(100% - 4px);
   font-family: var(--font-engraved);
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 1px;
   color: var(--text-muted);
   white-space: nowrap;
@@ -231,9 +231,10 @@
   text-shadow: 0 0 4px var(--sky-outer);
 }
 
-.sky-chart__target--label-left .sky-chart__name {
-  right: calc(100% - 4px);
-  left: auto;
+.sky-chart__target--label-above .sky-chart__name {
+  bottom: calc(100% - 6px);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .sky-chart__target:hover .sky-chart__name,
@@ -251,7 +252,7 @@
   margin-top: 10px;
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 16px;
+  font-size: var(--fs-note-small);
   color: var(--text-muted);
 }
 
@@ -289,7 +290,7 @@
     display: block;
   }
   .sky-chart__curve-label {
-    font-size: 12px;
+    font-size: 15px;
   }
   .sky-chart__hour {
     display: none;

@@ -95,7 +95,7 @@ a:hover {
   margin-top: 6px;
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 18px;
+  font-size: var(--fs-note-small);
   line-height: 1.35;
   color: var(--text-muted);
 }
@@ -103,7 +103,7 @@ a:hover {
 .label {
   font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 12px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
   color: var(--text-muted);

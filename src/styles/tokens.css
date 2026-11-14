@@ -22,6 +22,12 @@
   --font-engraved:
     'Cinzel', 'EB Garamond', Georgia, serif; /* Roman capitals, like engraved charts */
 
+  /* Minimum text sizes (accessibility pass). EB Garamond and Josefin Sans have small
+     lowercase letters, so they need a bigger number to read at the same size. */
+  --fs-label: 14px; /* uppercase, tracked labels and buttons */
+  --fs-small: 16px; /* small sans and monospace text: dates, readouts, names */
+  --fs-note-small: 19px; /* small italic notes in EB Garamond */
+
   --tracking-title: 7px;
   --tracking-label: 3px;
 

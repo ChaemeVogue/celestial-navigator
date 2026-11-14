@@ -6,7 +6,7 @@
 .story__eyebrow {
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 18px;
+  font-size: clamp(18px, 1.8vw, 21px);
   color: var(--text-muted);
 }
 
@@ -64,7 +64,7 @@
 .story__text {
   max-width: 30ch;
   font-family: var(--font-note);
-  font-size: 18px;
+  font-size: var(--fs-note-small);
   line-height: 1.4;
   color: var(--text-muted);
 }
@@ -76,7 +76,7 @@
   background: var(--brass);
   border: 0;
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
@@ -140,7 +140,7 @@
 .story__axis,
 .story__plate-label {
   font-family: var(--font-data);
-  font-size: 8px;
+  font-size: 9px;
   fill: var(--text-faint);
 }
 

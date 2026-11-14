@@ -228,7 +228,7 @@ export default function SkyChart({ targets, selectedTarget, onSelect }: Props) {
 
         <div className="sky-chart__targets" role="group" aria-label="Targets on the sky chart">
           {placed.map(({ target, left, top }) => {
-            // Put the name on the left if another target sits close by on the right (M101 and M51).
+            // Put the name above if another target sits close by on the right (M101 and M51, M1 and M45).
             const crowded = placed.some(
               (o) =>
                 o.target !== target &&
@@ -242,7 +242,7 @@ export default function SkyChart({ targets, selectedTarget, onSelect }: Props) {
               <button
                 key={target.id}
                 type="button"
-                className={`sky-chart__target${crowded ? ' sky-chart__target--label-left' : ''}`}
+                className={`sky-chart__target${crowded ? ' sky-chart__target--label-above' : ''}`}
                 style={{ left: `${left}%`, top: `${top}%` }}
                 aria-pressed={selected}
                 aria-label={`${target.messier} · ${target.name}, ${describeLatitude(lat)}`}

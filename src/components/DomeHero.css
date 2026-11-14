@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(12px, 2.4vh, 24px);
+  gap: clamp(16px, 3.2vh, 34px);
   min-height: 100svh;
   padding: clamp(20px, 4vh, 40px) 0 clamp(16px, 3vh, 28px);
   text-align: center;
@@ -14,7 +14,7 @@
 .dome__cartouche {
   position: relative;
   margin-top: auto; /* with the scroll cue's auto margin, centres everything on tall screens */
-  padding: 12px 40px 14px;
+  padding: clamp(10px, 1.6vh, 16px) 48px clamp(12px, 1.8vh, 18px);
   border-block: 1px solid var(--border-soft);
 }
 
@@ -41,7 +41,7 @@
 .dome__eyebrow {
   font-family: var(--font-note);
   font-style: italic;
-  font-size: clamp(15px, 1.6vw, 18px);
+  font-size: clamp(18px, 1.8vw, 21px);
   color: var(--text-muted);
 }
 
@@ -49,7 +49,7 @@
   margin-top: 2px;
   font-family: var(--font-engraved);
   font-weight: 400;
-  font-size: clamp(30px, 5.2vw, 58px);
+  font-size: clamp(28px, 4.4vw, 50px);
   line-height: 1.1;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -60,8 +60,9 @@
 
 /* As wide as possible while the whole first screen still fits (the chart is ~1.84:1) */
 .dome__chart {
-  width: min(100%, 1180px, calc((100svh - 400px) * 1.84));
-  min-width: min(100%, 320px);
+  margin-top: clamp(0px, 1vh, 12px);
+  width: min(100%, 1180px, calc((100svh - 450px) * 1.84));
+  min-width: min(100%, 540px); /* on short or zoomed screens, let the page scroll instead */
 }
 
 /* ---------- Instruction ---------- */
@@ -93,7 +94,7 @@
   gap: 8px 12px;
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 16px;
+  font-size: var(--fs-note-small);
   color: var(--text-faint);
 }
 
@@ -105,7 +106,7 @@
   border-radius: 0;
   font-family: var(--font-ui);
   font-style: normal;
-  font-size: 15px;
+  font-size: var(--fs-small);
   color: var(--text-muted);
   appearance: none;
   background-image:
@@ -133,7 +134,7 @@
   background: transparent;
   border: 1px solid var(--border-soft);
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -153,7 +154,7 @@
   background: transparent;
   border: 0;
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
