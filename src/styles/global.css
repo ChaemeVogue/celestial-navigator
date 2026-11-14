@@ -145,3 +145,9 @@ a:hover {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* The instrument opens a full screen below the dome; scroll-margin keeps it off the top edge */
+.instrument {
+  padding-top: var(--gap);
+  scroll-margin-top: 8px;
+}

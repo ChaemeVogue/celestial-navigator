@@ -26,7 +26,7 @@ export function useExplorer() {
   const selectedTarget = targets.find((t) => t.id === selectedId) ?? null
   const passCount = passesData?.passes.length ?? 0
 
-  // Load targets on mount (and on retry), then select the first one.
+  // Load targets on mount (and on retry). Nothing is selected until the user picks a star.
   useEffect(() => {
     let cancelled = false
     getTargets()
@@ -34,7 +34,6 @@ export function useExplorer() {
         if (cancelled) return
         setTargets(list)
         setTargetsStatus('ready')
-        setSelectedId((current) => current ?? list[0]?.id ?? null)
       })
       .catch(() => {
         if (!cancelled) setTargetsStatus('error')

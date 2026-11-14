@@ -1,0 +1,185 @@
+/* Fills the first screen: title, the dome, one instruction, and a way down */
+.dome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2.4vh, 24px);
+  min-height: 100svh;
+  padding: clamp(20px, 4vh, 40px) 0 clamp(16px, 3vh, 28px);
+  text-align: center;
+}
+
+/* ---------- Title plate ---------- */
+
+.dome__cartouche {
+  position: relative;
+  margin-top: auto; /* with the scroll cue's auto margin, centres everything on tall screens */
+  padding: 12px 40px 14px;
+  border-block: 1px solid var(--border-soft);
+}
+
+/* diamond studs at each end of the plate, like the divider */
+.dome__cartouche::before,
+.dome__cartouche::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  background: var(--brass);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.dome__cartouche::before {
+  left: 8px;
+}
+
+.dome__cartouche::after {
+  right: 8px;
+}
+
+.dome__eyebrow {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: clamp(15px, 1.6vw, 18px);
+  color: var(--text-muted);
+}
+
+.dome__title {
+  margin-top: 2px;
+  font-family: var(--font-engraved);
+  font-weight: 400;
+  font-size: clamp(30px, 5.2vw, 58px);
+  line-height: 1.1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass-light);
+}
+
+/* ---------- The dome ---------- */
+
+/* As wide as possible while the whole first screen still fits (the chart is ~1.84:1) */
+.dome__chart {
+  width: min(100%, 1180px, calc((100svh - 400px) * 1.84));
+  min-width: min(100%, 320px);
+}
+
+/* ---------- Instruction ---------- */
+
+.dome__prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.dome__instruction {
+  font-family: var(--font-engraved);
+  font-size: clamp(18px, 2vw, 24px);
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.dome__instruction strong {
+  font-weight: 400;
+  color: var(--brass-light);
+}
+
+.dome__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text-faint);
+}
+
+.dome__select {
+  min-height: var(--tap);
+  padding: 6px 36px 6px 12px;
+  background-color: transparent;
+  border: 1px solid var(--border-faint);
+  border-radius: 0;
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: 15px;
+  color: var(--text-muted);
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--brass) 50%),
+    linear-gradient(135deg, var(--brass) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 12px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.dome__select:hover:not(:disabled) {
+  border-color: var(--brass);
+}
+
+.dome__select option {
+  background: var(--bg);
+}
+
+.dome__retry {
+  min-height: var(--tap);
+  margin-left: 8px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--brass-light);
+}
+
+/* ---------- Scroll cue ---------- */
+
+.dome__scroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto; /* sits at the bottom of the first screen */
+  min-height: var(--tap);
+  padding: 8px 16px;
+  background: transparent;
+  border: 0;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-muted);
+}
+
+.dome__scroll:hover {
+  color: var(--brass-light);
+}
+
+.dome__chevron {
+  width: 20px;
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 1.5;
+  animation: dome-nudge 2.4s ease-in-out infinite;
+}
+
+@keyframes dome-nudge {
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dome__chevron {
+    animation: none;
+  }
+}

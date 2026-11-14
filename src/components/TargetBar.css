@@ -1,32 +1,15 @@
 .target-bar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px 48px;
-}
-
-/* Picker and readouts on the left, sky chart on the right; stacked when narrow */
-.target-bar__controls {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  flex: 1 1 340px;
-}
-
-.target-bar__chart {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1 1 420px;
-  max-width: 640px;
+  align-items: flex-end;
+  gap: 18px 36px;
 }
 
 .target-bar__picker {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 420px;
+  flex: 0 1 320px;
 }
 
 .target-bar__select {
@@ -56,7 +39,8 @@
 .target-bar__readouts {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 18px 32px;
+  gap: 14px 28px;
+  flex: 1 1 480px;
   margin: 0;
 }
 
@@ -71,32 +55,32 @@
 }
 
 .target-bar__readout output {
-  font-size: 20px;
-}
-
-.target-bar__select:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-.target-bar__error {
-  font-family: var(--font-note);
-  font-style: italic;
   font-size: 18px;
-  color: var(--text-muted);
 }
 
-.target-bar__retry {
+.target-bar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-height: var(--tap);
-  margin-left: 8px;
-  padding: 0 16px;
+  padding: 0 14px;
   background: transparent;
   border: 1px solid var(--border-soft);
   font-family: var(--font-ui);
-  font-style: normal;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: var(--brass-light);
+}
+
+.target-bar__back:hover {
+  border-color: var(--brass);
+}
+
+.target-bar__back svg {
+  width: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
 }

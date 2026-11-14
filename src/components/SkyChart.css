@@ -3,9 +3,19 @@
   container-type: inline-size;
 }
 
+/* Same proportions as the SVG viewBox in SkyChart.tsx (232 × 126) */
 .sky-chart__map {
   position: relative;
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 232 / 126;
+}
+
+/* Thin plate border joining the corner flourishes, like an engraved chart's neat line */
+.sky-chart__map::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--border-faint);
+  pointer-events: none;
 }
 
 .sky-chart__svg {
@@ -16,23 +26,91 @@
   overflow: visible;
 }
 
+/* ---------- Engraved frame ---------- */
+
+.sky-chart__frame-band {
+  fill: var(--panel-deep);
+}
+
+.sky-chart__frame-line {
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 1px;
+}
+
+.sky-chart__frame-line--outer {
+  stroke: var(--border-soft);
+}
+
 .sky-chart__outline {
+  stroke: var(--brass-light);
+  stroke-width: 1.5px;
+}
+
+.sky-chart__tick {
   stroke: var(--border-soft);
   stroke-width: 1px;
 }
 
+.sky-chart__tick--major {
+  stroke: var(--brass-light);
+}
+
+.sky-chart__flourish {
+  position: absolute;
+  width: clamp(28px, 6%, 56px);
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 1.2;
+  pointer-events: none;
+}
+
+.sky-chart__flourish-gem {
+  fill: var(--brass);
+  stroke: none;
+}
+
+.sky-chart__flourish--tl {
+  top: 0;
+  left: 0;
+}
+
+.sky-chart__flourish--tr {
+  top: 0;
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.sky-chart__flourish--bl {
+  bottom: 0;
+  left: 0;
+  transform: scaleY(-1);
+}
+
+.sky-chart__flourish--br {
+  right: 0;
+  bottom: 0;
+  transform: scale(-1);
+}
+
+/* ---------- The sky ---------- */
+
+.sky-chart__bg-star {
+  fill: var(--text);
+}
+
 .sky-chart__grid {
-  stroke: rgba(196, 203, 218, 0.1);
+  stroke: rgba(201, 165, 90, 0.12);
   stroke-width: 1px;
 }
 
 .sky-chart__equator {
-  stroke: rgba(196, 203, 218, 0.22);
+  stroke: rgba(201, 165, 90, 0.28);
   stroke-width: 1px;
 }
 
 .sky-chart__band {
-  stroke: rgba(201, 165, 90, 0.14);
+  stroke: rgba(201, 165, 90, 0.13);
   stroke-linecap: butt;
 }
 
@@ -42,9 +120,10 @@
 }
 
 .sky-chart__milky-way {
-  stroke: rgba(196, 203, 218, 0.45);
+  stroke: rgba(237, 230, 211, 0.4);
   stroke-width: 1px;
-  stroke-dasharray: 2 4;
+  stroke-dasharray: 1 4;
+  stroke-linecap: round;
 }
 
 /* Text labels are HTML so they stay a readable size at any chart width */
@@ -58,33 +137,37 @@
   pointer-events: none;
 }
 
-.sky-chart__hour,
-.sky-chart__curve-label {
+.sky-chart__hour {
   position: absolute;
-  transform: translate(-50%, -120%);
-  font-family: var(--font-data);
-  font-size: 11px;
-  color: var(--text-faint);
+  transform: translate(-50%, -125%);
+  font-family: var(--font-engraved);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--brass);
 }
 
 .sky-chart__curve-label {
+  position: absolute;
   transform: translate(-50%, -150%);
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 14px;
+  font-size: 15px;
   white-space: nowrap;
+  color: var(--text-faint);
 }
 
 .sky-chart__curve-label--ecliptic {
   color: var(--brass-light);
 }
 
+/* ---------- Targets: the brightest stars on the chart ---------- */
+
 .sky-chart__target {
   position: absolute;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   transform: translate(-50%, -50%);
   background: transparent;
@@ -93,34 +176,59 @@
 }
 
 .sky-chart__dot {
-  width: 9px;
-  height: 9px;
-  background: var(--text);
+  width: 10px;
+  height: 10px;
+  background: #fffaf0;
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(237, 230, 211, 0.6);
+  box-shadow:
+    0 0 6px 1px rgba(255, 244, 214, 0.9),
+    0 0 18px 4px rgba(227, 200, 138, 0.35);
+  animation: sky-chart-twinkle 4s ease-in-out infinite;
   transition: transform 0.15s;
 }
 
-.sky-chart__target:hover .sky-chart__dot {
-  transform: scale(1.3);
+/* Stagger the twinkle so the stars don't pulse in step */
+.sky-chart__target:nth-child(2n) .sky-chart__dot {
+  animation-delay: -1.3s;
 }
 
-/* Selected: brass dot inside a ring, like the candidate markers on the plate */
+.sky-chart__target:nth-child(3n) .sky-chart__dot {
+  animation-delay: -2.6s;
+}
+
+@keyframes sky-chart-twinkle {
+  50% {
+    box-shadow:
+      0 0 4px 1px rgba(255, 244, 214, 0.7),
+      0 0 10px 2px rgba(227, 200, 138, 0.2);
+  }
+}
+
+.sky-chart__target:hover .sky-chart__dot,
+.sky-chart__target:focus-visible .sky-chart__dot {
+  transform: scale(1.35);
+}
+
+/* Selected: brass star inside a ring, like the candidate markers on the plate */
 .sky-chart__target[aria-pressed='true'] .sky-chart__dot {
   background: var(--brass-light);
   box-shadow:
-    0 0 0 4px var(--bg),
-    0 0 0 5px var(--brass-light);
+    0 0 0 4px var(--sky-inner),
+    0 0 0 5px var(--brass-light),
+    0 0 16px 6px rgba(227, 200, 138, 0.35);
+  animation: none;
 }
 
 .sky-chart__name {
   position: absolute;
   left: calc(100% - 4px);
-  font-family: var(--font-data);
-  font-size: 12px;
+  font-family: var(--font-engraved);
+  font-size: 13px;
+  letter-spacing: 1px;
   color: var(--text-muted);
   white-space: nowrap;
   pointer-events: none;
+  text-shadow: 0 0 4px var(--sky-outer);
 }
 
 .sky-chart__target--label-left .sky-chart__name {
@@ -133,21 +241,23 @@
   color: var(--brass-light);
 }
 
+/* ---------- Key ---------- */
+
 .sky-chart__caption {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 20px;
-  margin-top: 14px;
+  justify-content: center;
+  gap: 6px 28px;
+  margin-top: 10px;
   font-family: var(--font-note);
   font-style: italic;
-  font-size: 15px;
-  line-height: 1.35;
+  font-size: 16px;
   color: var(--text-muted);
 }
 
 .sky-chart__key {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
 }
 
@@ -155,22 +265,21 @@
   flex: none;
   width: 22px;
   height: 10px;
-  transform: translateY(1px);
 }
 
 .sky-chart__swatch--band {
   background: rgba(201, 165, 90, 0.22);
-  border-block: 1px solid transparent;
   box-shadow: inset 0 -5px 0 -4px var(--brass);
 }
 
 .sky-chart__swatch--milky-way {
-  border-bottom: 1px dashed rgba(196, 203, 218, 0.6);
-  height: 6px;
+  height: 2px;
+  background-image: radial-gradient(circle, rgba(237, 230, 211, 0.7) 1px, transparent 1.2px);
+  background-size: 5px 2px;
 }
 
 /* On narrow charts, names would collide: show only the selected one (and any hovered or focused) */
-@container (max-width: 480px) {
+@container (max-width: 520px) {
   .sky-chart__name {
     display: none;
   }
@@ -184,5 +293,11 @@
   }
   .sky-chart__hour {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-chart__dot {
+    animation: none;
   }
 }

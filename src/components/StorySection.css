@@ -1,0 +1,208 @@
+.story {
+  padding: clamp(48px, 8vh, 96px) 0 24px;
+  text-align: center;
+}
+
+.story__eyebrow {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.story__heading {
+  margin-top: 4px;
+  font-family: var(--font-engraved);
+  font-weight: 400;
+  font-size: clamp(26px, 3.4vw, 40px);
+  letter-spacing: 0.08em;
+  color: var(--brass-light);
+}
+
+.story__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--gap);
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each card is a small engraved plate: double gilt border, picture, one sentence */
+.story__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 22px;
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  outline: 1px solid var(--border-faint);
+  outline-offset: -6px;
+}
+
+.story__art {
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 4 / 3;
+  background: radial-gradient(ellipse at center, var(--sky-inner), var(--sky-outer));
+}
+
+.story__title {
+  font-family: var(--font-engraved);
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.story__numeral {
+  margin-right: 4px;
+  color: var(--brass);
+}
+
+.story__text {
+  max-width: 30ch;
+  font-family: var(--font-note);
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.story__button {
+  min-height: var(--tap);
+  margin-top: auto;
+  padding: 0 22px;
+  background: var(--brass);
+  border: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--bg);
+}
+
+.story__button:hover {
+  background: var(--brass-light);
+}
+
+/* ---------- Line art ---------- */
+
+.story__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.story__defs line {
+  stroke: rgba(201, 165, 90, 0.45);
+  stroke-width: 0.5;
+}
+
+.story__plate {
+  fill: none;
+  stroke: var(--border-soft);
+  stroke-width: 0.8;
+}
+
+.story__star {
+  fill: var(--text);
+}
+
+.story__line {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 0.9;
+}
+
+.story__line--brass {
+  stroke: var(--brass);
+}
+
+.story__fill {
+  fill: url(#story-hatch);
+}
+
+.story__ray {
+  stroke: var(--brass-light);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+}
+
+.story__band {
+  fill: none;
+  stroke: rgba(201, 165, 90, 0.18);
+  stroke-width: 14;
+}
+
+.story__axis,
+.story__plate-label {
+  font-family: var(--font-data);
+  font-size: 8px;
+  fill: var(--text-faint);
+}
+
+.story__plate-label {
+  fill: var(--brass-light);
+}
+
+.story__mover {
+  fill: var(--brass-light);
+}
+
+.story__ring {
+  fill: none;
+  stroke: var(--brass-light);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 1.5;
+}
+
+/* The blink: plate A and plate B take turns, like Tombaugh's comparator */
+.story__mover--a {
+  animation: story-blink 1.6s steps(1) infinite;
+}
+
+.story__mover--b {
+  animation: story-blink 1.6s steps(1) infinite reverse;
+}
+
+@keyframes story-blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.story__planet {
+  fill: var(--brass-light);
+  filter: drop-shadow(0 0 2px rgba(227, 200, 138, 0.9));
+  animation: story-orbit 9s linear infinite;
+}
+
+@keyframes story-orbit {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* Reduced motion: show plate A only, and park the planet mid-band */
+@media (prefers-reduced-motion: reduce) {
+  .story__mover--a,
+  .story__mover--b,
+  .story__planet {
+    animation: none;
+  }
+  .story__mover--b {
+    opacity: 0;
+  }
+  .story__planet {
+    offset-distance: 50%;
+  }
+}

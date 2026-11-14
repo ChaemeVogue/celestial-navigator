@@ -19,6 +19,8 @@
   --font-ui: 'Josefin Sans', system-ui, sans-serif;
   --font-note: 'EB Garamond', Georgia, serif;
   --font-data: 'Courier Prime', ui-monospace, monospace;
+  --font-engraved:
+    'Cinzel', 'EB Garamond', Georgia, serif; /* Roman capitals, like engraved charts */
 
   --tracking-title: 7px;
   --tracking-label: 3px;
