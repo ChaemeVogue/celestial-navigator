@@ -1,0 +1,41 @@
+{
+  "_source": "REAL SPHEREx data: IRSA cutouts in D1/D3/D6, median-combined per visit, reprojected north-up (requested at 0.15°). Dates are each visit's mean observation date. Made by pipeline/to_app.py. No candidate movers yet.",
+  "targetId": "m45",
+  "fieldSizeDeg": 0.1,
+  "passes": [
+    {
+      "id": "m45-pass-1",
+      "label": "Pass I",
+      "date": "2025-08-24T00:00:00Z",
+      "imageUrl": "/mock/images/m45/pass-1.png",
+      "bandImageUrls": {
+        "D1": "/mock/images/m45/pass-1-d1.png",
+        "D3": "/mock/images/m45/pass-1-d3.png",
+        "D6": "/mock/images/m45/pass-1-d6.png"
+      }
+    },
+    {
+      "id": "m45-pass-2",
+      "label": "Pass II",
+      "date": "2026-02-10T00:00:00Z",
+      "imageUrl": "/mock/images/m45/pass-2.png",
+      "bandImageUrls": {
+        "D1": "/mock/images/m45/pass-2-d1.png",
+        "D3": "/mock/images/m45/pass-2-d3.png",
+        "D6": "/mock/images/m45/pass-2-d6.png"
+      }
+    },
+    {
+      "id": "m45-pass-3",
+      "label": "Pass III",
+      "date": "2026-08-22T00:00:00Z",
+      "imageUrl": "/mock/images/m45/pass-3.png",
+      "bandImageUrls": {
+        "D1": "/mock/images/m45/pass-3-d1.png",
+        "D3": "/mock/images/m45/pass-3-d3.png",
+        "D6": "/mock/images/m45/pass-3-d6.png"
+      }
+    }
+  ],
+  "candidates": []
+}

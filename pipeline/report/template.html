@@ -1,0 +1,680 @@
+<title>SPHEREx Target Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Josefin+Sans:wght@400;600&family=Poiret+One&display=swap">
+<style>
+  /* Layout: a single logbook column of numbered plates; the sky always dark, personality in the brass frame.
+     Deliberately single-theme (night chart room), matching the Celestial Navigator app. */
+  :root {
+    --bg: #0A1324;
+    --panel: #101C33;
+    --panel-deep: #0E1930;
+    --brass: #C9A55A;
+    --brass-light: #E3C88A;
+    --text: #EDE6D3;
+    --muted: #C4CBDA;
+    --faint: #9AA5BD;
+    --line: rgba(201, 165, 90, 0.55);
+    --line-faint: rgba(201, 165, 90, 0.22);
+    --d1: #5AA0FF;
+    --d3: #F4EFE2;
+    --d6: #FFB000;
+    --display: 'Poiret One', 'Josefin Sans', sans-serif;
+    --ui: 'Josefin Sans', system-ui, sans-serif;
+    --note: 'EB Garamond', Georgia, serif;
+    --data: 'Courier Prime', ui-monospace, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--ui);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-block: 32px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  h1, h2, h3, p { margin: 0; }
+  :focus-visible { outline: 2px solid var(--brass-light); outline-offset: 2px; }
+
+  .eyebrow {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--brass);
+  }
+  h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(30px, 6vw, 52px); line-height: 1.08;
+    letter-spacing: clamp(2px, 0.6vw, 6px); text-transform: uppercase;
+    text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(24px, 3.6vw, 32px); letter-spacing: 2px;
+    color: var(--brass-light); text-wrap: balance;
+  }
+  .lede, .note {
+    font-family: var(--note); font-style: italic; color: var(--muted);
+    max-width: 66ch;
+  }
+  .lede { font-size: 21px; line-height: 1.45; }
+  .note { font-size: 18px; line-height: 1.45; }
+  .data { font-family: var(--data); color: var(--brass-light); font-variant-numeric: tabular-nums; }
+
+  header.top { display: flex; flex-direction: column; gap: 14px; }
+  .rule { display: flex; align-items: center; gap: 12px; }
+  .rule span { flex: 1; height: 1px; background: var(--line); }
+  .rule svg { width: 56px; height: 12px; flex: none; }
+
+  .facts {
+    display: flex; flex-wrap: wrap; gap: 10px 34px; margin-top: 6px;
+    padding: 14px 18px; border: 1px solid var(--line); background: var(--panel);
+  }
+  .fact { display: flex; flex-direction: column; gap: 2px; }
+  .fact b { font-family: var(--data); font-weight: 400; font-size: 22px; color: var(--brass-light); }
+  .fact span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.5px; color: var(--muted); }
+
+  section { display: flex; flex-direction: column; gap: 16px; }
+  .sec-head { display: flex; flex-direction: column; gap: 8px; }
+
+  /* Brass-framed plate */
+  .plate {
+    position: relative; padding: 10px; background: var(--panel);
+    border: 1px solid var(--brass);
+  }
+  .plate::before {
+    content: ''; position: absolute; inset: 5px; border: 1px solid var(--line-faint); pointer-events: none;
+  }
+  .sky { position: relative; aspect-ratio: 1; max-width: 100%; background: #04070E; overflow: hidden; }
+  .sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .px { image-rendering: pixelated; }
+  .badge {
+    position: absolute; top: 12px; right: 12px; padding: 5px 10px;
+    background: rgba(10, 19, 36, 0.82); border: 1px solid var(--line);
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.5px; color: var(--brass-light);
+  }
+  .compass { position: absolute; font-family: var(--display); font-size: 18px; color: var(--brass-light); }
+  .compass.n { top: 8px; left: 50%; transform: translateX(-50%); }
+  .compass.e { left: 10px; top: 50%; transform: translateY(-50%); }
+
+  /* Hero blink */
+  .blink { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .blink .plate { flex: 999 1 420px; max-width: 560px; }
+  .controls { flex: 1 1 280px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btn {
+    min-height: 44px; min-width: 44px; padding: 0 14px;
+    background: transparent; border: 1px solid var(--line); color: var(--brass-light);
+    font: 600 12px/1 var(--ui); text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--brass); }
+  .btn[aria-pressed="true"] { background: var(--brass); color: var(--bg); border-color: var(--brass); }
+  .passlist { display: flex; flex-direction: column; gap: 4px; }
+  .passbtn {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 6px 12px;
+    background: transparent; border: 1px solid transparent; color: var(--text); cursor: pointer; text-align: left;
+    font: 600 13px/1.2 var(--ui); text-transform: uppercase; letter-spacing: 2px;
+  }
+  .passbtn:hover { border-color: var(--line-faint); }
+  .passbtn[aria-pressed="true"] { border-color: var(--line); background: rgba(201,165,90,0.08); }
+  .passbtn svg { width: 13px; height: 13px; flex: none; fill: var(--panel); stroke: var(--brass); stroke-width: 1.5; }
+  .passbtn[aria-pressed="true"] svg { fill: var(--brass); }
+  .passbtn .data { margin-left: auto; font-size: 13px; letter-spacing: 0; text-transform: none; }
+
+  .key { display: flex; flex-direction: column; gap: 6px; }
+  .key div { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; box-shadow: 0 0 0 1px rgba(237,230,211,0.3); }
+  .key .data { margin-left: auto; font-size: 13px; }
+
+  /* Grids of small plates */
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  figure .sky { border: 1px solid var(--line-faint); }
+  figcaption { font-family: var(--data); font-size: 12px; line-height: 1.4; color: var(--muted); }
+  figcaption b { color: var(--brass-light); font-weight: 400; }
+  .rowhead { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.5px; color: var(--brass); }
+
+  .matrix { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 10px 12px; align-items: center; }
+  .matrix .colhead { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); text-align: center; }
+  .matrix .rowlabel { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--brass-light); writing-mode: vertical-rl; transform: rotate(180deg); justify-self: center; }
+
+  /* Chart */
+  .chart-wrap { overflow-x: auto; border: 1px solid var(--line-faint); background: var(--panel-deep); padding: 10px 6px 4px; }
+  .chart-wrap svg { display: block; width: 100%; min-width: 560px; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+
+  /* Flipbook */
+  .flip { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .flip .plate { flex: 999 1 320px; max-width: 420px; }
+  .flip .controls input[type=range] { width: 100%; accent-color: var(--brass); min-height: 44px; }
+  .readout { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; }
+  .readout dt { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); align-self: center; }
+  .readout dd { margin: 0; }
+
+  /* Findings + ideas */
+  .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+  .card { border: 1px solid var(--line-faint); background: var(--panel); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .card h3 { font-size: 15px; font-weight: 600; letter-spacing: 0.5px; color: var(--text); }
+  .card p { font-size: 15px; color: var(--muted); }
+  .card .tag { align-self: flex-start; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; padding: 3px 8px; border: 1px solid var(--line); color: var(--brass-light); }
+  .card.idea { border-color: var(--line); }
+
+  footer { font-size: 13px; color: var(--faint); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line-faint); padding-top: 16px; }
+  footer .data { color: var(--faint); }
+
+  @media (max-width: 520px) {
+    .grid.three { gap: 8px; }
+    figcaption { font-size: 11px; }
+    .matrix { gap: 6px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<style>
+  .picker { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px; }
+  .picker label { display: flex; flex-direction: column; gap: 8px; }
+  .picker select {
+    min-height: 44px; min-width: min(100%, 300px); padding: 8px 40px 8px 14px;
+    background-color: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 0;
+    font: 400 17px var(--ui); appearance: none; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--brass) 50%), linear-gradient(135deg, var(--brass) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat;
+  }
+  .picker select:hover { border-color: var(--brass); }
+  .coords { font-family: var(--data); font-size: 15px; color: var(--brass-light); padding-bottom: 12px; }
+  .short-tag { font-size: 9px; letter-spacing: 1.5px; padding: 2px 6px; border: 1px solid var(--line); color: var(--brass-light); margin-left: 4px; }
+  .empty-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px;
+    border: 1px dashed var(--line-faint); font-family: var(--note); font-style: italic; font-size: 15px; color: var(--faint); }
+  .skychart { margin: 22px 0 0; max-width: 720px; container-type: inline-size; }
+  .skymap { position: relative; aspect-ratio: 2 / 1; }
+  .skymap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .sky-lbl { position: absolute; transform: translate(-50%, -150%); font: italic 14px var(--note); color: var(--faint); white-space: nowrap; pointer-events: none; }
+  .sky-lbl.ecl { color: var(--brass-light); }
+  .sky-dot { position: absolute; width: 28px; height: 28px; padding: 0; transform: translate(-50%, -50%); background: transparent; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+  .sky-dot i { width: 9px; height: 9px; border-radius: 50%; background: var(--text); box-shadow: 0 0 6px rgba(237,230,211,.6); }
+  .sky-dot[aria-pressed="true"] i { background: var(--brass-light); box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--brass-light); }
+  .sky-dot b { position: absolute; left: calc(100% - 4px); font: 400 12px var(--data); color: var(--muted); white-space: nowrap; pointer-events: none; }
+  .sky-dot.left b { left: auto; right: calc(100% - 4px); }
+  .sky-dot:hover b, .sky-dot[aria-pressed="true"] b { color: var(--brass-light); }
+  .skychart figcaption { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 20px; font: italic 15px/1.35 var(--note); color: var(--muted); }
+  .skychart figcaption span { display: flex; gap: 8px; align-items: baseline; }
+  .sw { flex: none; width: 22px; height: 10px; }
+  .sw.band { background: rgba(201,165,90,.22); box-shadow: inset 0 -5px 0 -4px var(--brass); }
+  .sw.mw { height: 6px; border-bottom: 1px dashed rgba(196,203,218,.6); }
+  @container (max-width: 480px) { .sky-dot b { display: none; } .sky-dot[aria-pressed="true"] b, .sky-dot:hover b, .sky-dot:focus-visible b { display: block; } }
+</style>
+
+<div class="page">
+  <header class="top">
+    <p class="eyebrow">Celestial Navigator · real data preview</p>
+    <h1 id="title"></h1>
+    <p class="lede" id="lede"></p>
+    <div class="picker">
+      <label class="label" for="target">Set course for a target
+        <select id="target"></select>
+      </label>
+      <p class="coords" id="coords"></p>
+    </div>
+    <figure class="skychart">
+      <p class="label">Or pick from the sky</p>
+      <div class="skymap" id="skymap" role="group" aria-label="Targets on the sky chart"></div>
+      <figcaption>
+        <span><i class="sw band" aria-hidden="true"></i>Within 10° of the ecliptic, where planets and most asteroids travel: the best place to catch something moving</span>
+        <span><i class="sw mw" aria-hidden="true"></i>Plane of the Milky Way: crowded star fields</span>
+      </figcaption>
+    </figure>
+    <div class="facts" id="facts" aria-live="polite"></div>
+    <div class="rule" aria-hidden="true"><span></span><svg viewBox="0 0 56 12"><path d="M6 1 L11 6 L6 11 L1 6 Z" fill="none" stroke="#C9A55A"/><path d="M28 0 L34 6 L28 12 L22 6 Z" fill="#C9A55A"/><path d="M50 1 L55 6 L50 11 L45 6 Z" fill="none" stroke="#C9A55A"/></svg><span></span></div>
+  </header>
+
+  <section aria-labelledby="blink-h">
+    <div class="sec-head">
+      <p class="eyebrow">Plate 1 · the blink comparator</p>
+      <h2 id="blink-h">Every visit, on one grid</h2>
+      <p class="note">Each frame is the median of every exposure in that visit, reprojected onto one shared north-up grid and stretched with the same limits, so only real changes would flicker.</p>
+    </div>
+    <div class="blink">
+      <div class="plate">
+        <div class="sky">
+          <img id="blink-img" alt="">
+          <span class="compass n" aria-hidden="true">N</span>
+          <span class="compass e" aria-hidden="true">E</span>
+          <span class="badge" id="blink-badge" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="passlist" role="group" aria-label="Visits" id="passlist"></div>
+        <div class="seg">
+          <button class="btn" id="blink-prev" aria-label="Previous visit">◀</button>
+          <button class="btn" id="blink-play" aria-pressed="false" style="flex:1">Blink</button>
+          <button class="btn" id="blink-next" aria-label="Next visit">▶</button>
+        </div>
+        <div>
+          <p class="label" style="margin-bottom:8px">Show</p>
+          <div class="seg" role="group" aria-label="Band" id="bandseg"></div>
+        </div>
+        <div class="key" id="key"></div>
+        <p class="note" id="blink-note" style="font-size:16px"></p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="raw-h">
+    <div class="sec-head">
+      <p class="eyebrow">Plate 2 · straight from IRSA</p>
+      <h2 id="raw-h">What a single cutout looks like</h2>
+      <p class="note" id="raw-note"></p>
+    </div>
+    <div id="raw"></div>
+  </section>
+
+  <section aria-labelledby="aligned-h">
+    <div class="sec-head">
+      <p class="eyebrow">Plate 3 · lined up</p>
+      <h2 id="aligned-h">Every visit, every detector, north up</h2>
+      <p class="note" id="aligned-note"></p>
+    </div>
+    <div class="matrix" id="matrix"></div>
+  </section>
+
+  <section aria-labelledby="time-h">
+    <div class="sec-head">
+      <p class="eyebrow">Plate 4 · when and where in the spectrum</p>
+      <h2 id="time-h"></h2>
+      <p class="note">Each dot is one image. SPHEREx's filters change wavelength across the detector, so the same detector samples the target at a different wavelength each time it lands on a different spot.</p>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="chart-wrap"><svg id="chart" viewBox="0 0 960 360" role="img" aria-label="Scatter chart of observation date against wavelength for each exposure, grouped into visits"></svg></div>
+  </section>
+
+  <section aria-labelledby="flip-h">
+    <div class="sec-head">
+      <p class="eyebrow">Plate 5 · frame by frame</p>
+      <h2 id="flip-h">Every D3 exposure in order</h2>
+      <p class="note">Inside one visit, exposures come minutes to days apart. This is where something nearby, like an asteroid, would show up: it would move between these frames long before the next pass.</p>
+    </div>
+    <div class="flip">
+      <div class="plate">
+        <div class="sky">
+          <img id="flip-img" alt="">
+          <span class="badge" id="flip-badge" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="label" for="flip-range">Exposure</label>
+        <input type="range" id="flip-range" min="0" value="0">
+        <div class="seg">
+          <button class="btn" id="flip-play" aria-pressed="false" style="flex:1">Play frames</button>
+        </div>
+        <dl class="readout" id="flip-readout"></dl>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="diff-h">
+    <div class="sec-head">
+      <p class="eyebrow">Plate 6 · what changed</p>
+      <h2 id="diff-h">Difference images</h2>
+      <p class="note" id="diff-note"></p>
+    </div>
+    <div class="grid" id="diffs"></div>
+  </section>
+
+  <section aria-labelledby="learn-h">
+    <div class="sec-head">
+      <p class="eyebrow">For the backend</p>
+      <h2 id="learn-h">What these runs taught us</h2>
+    </div>
+    <div class="cards">
+      <div class="card"><span class="tag">Alignment</span><h3>Request 0.15°, crop to 0.1°</h3><p>Turning a square cutout north-up leaves empty corners (see M101). For M104 we asked IRSA for 0.15° and reprojected onto the 0.1° grid, and the corners filled completely.</p></div>
+      <div class="card"><span class="tag">Grouping</span><h3>Not every visit is a full pass</h3><p>M104 has a one-day visit in February 2026 with 10 images and no D1 at all. The backend needs a rule for short visits, and the colour image needs to cope with a missing detector (here it turns amber).</p></div>
+      <div class="card"><span class="tag">Downloads</span><h3>Each cutout is 4–4.5 MB</h3><p>M101 came to 628 MB and M104 to 766 MB, mostly the extra layers rather than the image. IRSA also returned temporary 503 errors, so retries are a must. Cache everything and never fetch on page load.</p></div>
+      <div class="card"><span class="tag">Background</span><h3>Subtract the ZODI layer</h3><p>Each cutout includes a model of zodiacal light. Subtracting it before combining gives a flat dark sky between passes.</p></div>
+      <div class="card"><span class="tag">Edges</span><h3>Some cutouts are cropped</h3><p>When the target sat near a detector edge, the cutout came back as small as 40 pixels on one side. Coverage should be tracked per image, and combining with a median handles the gaps.</p></div>
+      <div class="card"><span class="tag">Colour key</span><h3>Use measured wavelengths</h3><p>D1 lands between about 0.74 and 1.11 µm, D3 1.62–2.42 µm and D6 4.41–5.01 µm, depending on where the target falls on the detector. The medians (about 0.9, 2.0 and 4.7 µm) make honest labels.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ideas-h">
+    <div class="sec-head">
+      <p class="eyebrow">For brainstorming</p>
+      <h2 id="ideas-h">Where our spin could come from</h2>
+    </div>
+    <div class="cards">
+      <div class="card idea"><h3>Two clocks: within a visit and between passes</h3><p>Blinking passes six months apart catches slow, distant things. Flipping through exposures inside one visit catches fast, nearby things like asteroids. Showing both timescales could be the app's signature.</p></div>
+      <div class="card idea"><h3>Point the chart at the ecliptic</h3><p>Asteroids crowd near the ecliptic. M104 sits about 7° from it and M45 about 4°, so they're far more likely to show real movers than M101, M31 or M51.</p></div>
+      <div class="card idea"><h3>Planet X would jump, not creep</h3><p>Rough estimate: from Earth's orbit, an object at 500 AU shifts about 14′ over six months, and one at 1,000 AU about 7′. Both are bigger than our 6′ field, so a distant-planet hunt needs wider fields or a search across neighbouring tiles.</p></div>
+      <div class="card idea"><h3>A spectrum scrubber</h3><p>SPHEREx is a spectral survey: every exposure is a slightly different wavelength. A slider that sweeps one target from 0.75 to 5 µm would show stars fading and dust lighting up, something no ordinary sky viewer offers.</p></div>
+      <div class="card idea"><h3>Difference mode as a toggle</h3><p>Next to Play, a Difference toggle would turn the plate into "what changed" and make faint movers pop without any extra data.</p></div>
+      <div class="card idea"><h3>Bonus visits as timeline ticks</h3><p>Short visits like M104's February one could appear as small ticks between the main passes: extra moments to check a candidate, without pretending they're full passes.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Data: SPHEREx spectral image cutouts from NASA/IPAC Infrared Science Archive (IRSA), DR1 and QR3, queried by position with the IRSA notebook's TAP query.</p>
+    <p class="data" id="footer-data"></p>
+  </footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+const TEXT = {
+  m101: {
+    lede: 'The Pinwheel Galaxy as SPHEREx actually recorded it: every image IRSA holds of this spot in three detectors, sorted into passes, lined up north-up, and blinked the way the app will.',
+    raw: 'Unprocessed D3 cutouts at 0.15°, shown pixel for pixel. Black specks are flagged pixels, and the camera\'s orientation flips nearly half a turn between the May and December passes.',
+    aligned: 'Requested at 0.15° and cropped to 0.1° after reprojecting, so the corners are full even though the camera turns between passes. Amber knots in D6 are star-forming regions glowing at 4.7 µm.',
+    diff: 'Each pass minus the one before, in D3. Anything brighter later would show blue and anything brighter earlier amber. Here it\'s only faint noise and edge seams, as expected 60° from the ecliptic.',
+    blink: 'Three clean passes about six months apart, with 15–19 images per detector in each.',
+  },
+  m104: {
+    lede: 'The Sombrero Galaxy, 7° from the ecliptic, where asteroids are common. Every image IRSA holds of this spot in three detectors, requested slightly larger and cropped so the frame is full.',
+    raw: 'Unprocessed D3 cutouts at 0.15°, shown pixel for pixel (about 88 pixels across). Notice the bright specks that appear in one frame and not the next: cosmic rays, hot pixels, or possibly something moving.',
+    aligned: 'Requested at 0.15° and cropped to 0.1° after reprojecting, so the corners are full. The dark dust lane cuts across the bulge in D1 and fades at longer wavelengths. The short visit has no D1 images, so that cell is empty.',
+    diff: 'Each visit minus the one before, in D3. Anything brighter later would show blue and anything brighter earlier amber. Medians wash out anything that moves within a visit, so check the flipbook for fast movers.',
+    blink: 'Three passes plus a one-day short visit in February 2026. That visit has only D3 and D6 images, so its colour frame has no blue and looks amber.',
+  },
+  m45: {
+    lede: 'The heart of the Pleiades, only 4° from the ecliptic, the closest of our targets to the plane where asteroids travel. Every image IRSA holds of this spot in three detectors, requested slightly larger and cropped so the frame is full.',
+    raw: 'Unprocessed D3 cutouts at 0.15°, shown pixel for pixel. Some frames are cut short because the target sits near the edge of the detector, which is why a few look narrower.',
+    aligned: 'The cluster’s stars are sharp in every band, and the soft glow on the left is the dust around Merope, lit by starlight. It shows best in D1 and D3, where the dust reflects blue light, and fades by 4.7 µm.',
+    diff: 'Each pass minus the one before, in D3. No mover stands out, but every bright star leaves a blue-and-amber ring: SPHEREx star images change shape as the camera turns between passes, so a plain difference flags real stars too. The app will need to allow for this.',
+    blink: 'Three clean passes about six months apart (August, February, August), with 18–19 images per detector in each and no short visits.',
+  },
+  m1: {
+    lede: 'The Crab Nebula, the wreck of a star seen exploding in 1054, sitting only 1.3° from the ecliptic. At about 6′ by 4′ it is one of the few famous objects that fits our field whole.',
+    raw: 'Unprocessed D3 cutouts at 0.15°, shown pixel for pixel. The nebula is bright enough to see in every single exposure, even before combining.',
+    aligned: 'This target uses a gentler stretch than the others, because the nebula fills the frame and would otherwise wash out to white. The filaments show best in D1 and D3; at 4.7 µm the glow is smoother.',
+    diff: 'Each pass minus the one before, in D3. Almost nothing changes, which is what we\'d expect: the Crab does expand, but only by a fraction of a pixel per year at this resolution.',
+    blink: 'Three clean passes about six months apart (September, March, September), with 17–18 images per detector in each.',
+  },
+  m16: {
+    lede: 'The Pillars of Creation in the Eagle Nebula, made famous by Hubble and JWST. They sit in the plane of the Milky Way, so the field is packed with stars, and about 10° from the ecliptic.',
+    raw: 'Unprocessed D3 cutouts at 0.15°, shown pixel for pixel. Almost every speck here is a real star, which makes this the most crowded field we have processed.',
+    aligned: 'The pillars are hard to see in D1 and D3, where they are dark against the stars, but show as a glowing column at 4.7 µm (D6), where warm dust gives off its own light. Stars bright enough to saturate the camera have their centres filled in from the pixels around them.',
+    diff: 'Each pass minus the one before, in D3. The crowded field leaves many small rings, and the saturated star at the lower right flips between blue and amber. Both are false alarms a difference mode would need to ignore.',
+    blink: 'Three passes. The second and third each stretch over six or seven weeks, because SPHEREx came back to this spot several times close together.',
+  },
+};
+const BANDS = [
+  { id: 'colour', label: 'Colour', key: null },
+  { id: 'D1', label: 'D1', key: 'SPHEREx-D1', colour: 'var(--d1)', name: 'Shortest' },
+  { id: 'D3', label: 'D3', key: 'SPHEREx-D3', colour: 'var(--d3)', name: 'Middle' },
+  { id: 'D6', label: 'D6', key: 'SPHEREx-D6', colour: 'var(--d6)', name: 'Longest' },
+];
+const $ = (id) => document.getElementById(id);
+const el = (tag, attrs = {}, html = '') => { const e = document.createElement(tag); Object.assign(e, attrs); if (html) e.innerHTML = html; return e; };
+const fmtDate = (iso) => new Date((iso.length <= 10 ? iso + 'T00:00:00Z' : iso + ':00Z').replace(' ', 'T'))
+  .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const pad = (n) => String(n).padStart(2, '0');
+function fmtRA(deg) {
+  const t = Math.round(deg / 15 * 36000) % 864000;
+  return `${pad(Math.floor(t / 36000))}h ${pad(Math.floor(t % 36000 / 600))}m ${(t % 600 / 10).toFixed(1).padStart(4, '0')}s`;
+}
+function fmtDec(deg) {
+  const a = Math.round(Math.abs(deg) * 3600);
+  return `${deg < 0 && a ? '−' : '+'}${Math.floor(a / 3600)}° ${pad(Math.floor(a % 3600 / 60))}′ ${pad(a % 60)}″`;
+}
+const shortTag = (p) => p.short ? '<span class="short-tag">SHORT</span>' : '';
+
+let T, IMG, P, passIdx = 0, band = 'colour', timer = null, flipTimer = null;
+
+// Target picker
+const select = $('target');
+Object.entries(DATA.targets).forEach(([id, t]) => {
+  const m = t.meta.target;
+  select.appendChild(el('option', { value: id, textContent: `${m.messier} · ${m.name}` }));
+});
+select.addEventListener('change', () => {
+  render(select.value);
+  try { history.replaceState(null, '', '#' + select.value); } catch (e) {}
+});
+
+// Sky chart: Hammer projection of the whole sky (RA 12h centre, increasing left), same as the app's.
+const SKY = (() => {
+  const D = Math.PI / 180, E = 23.4393 * D;
+  const w = (x) => ((x % 360) + 360) % 360;
+  const hammer = (ra, dec) => {
+    let l = 180 - w(ra); if (l <= -180) l += 360; l *= D; const d = dec * D;
+    const z = Math.sqrt(1 + Math.cos(d) * Math.cos(l / 2));
+    return [100 + 100 * Math.cos(d) * Math.sin(l / 2) / z, 50 - 50 * Math.sin(d) / z];
+  };
+  const ecl = (lon) => { const l = lon * D; return [w(Math.atan2(Math.sin(l) * Math.cos(E), Math.cos(l)) / D), Math.asin(Math.sin(E) * Math.sin(l)) / D]; };
+  const gal = (lon) => { const x = 122.93192 * D - lon * D, gd = 27.12825 * D;
+    return [w(192.85948 + Math.atan2(Math.sin(x), -Math.sin(gd) * Math.cos(x)) / D), Math.asin(Math.cos(gd) * Math.cos(x)) / D]; };
+  const eclLat = (ra, dec) => Math.asin(Math.sin(dec * D) * Math.cos(E) - Math.cos(dec * D) * Math.sin(E) * Math.sin(ra * D)) / D;
+  const steps = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => a + (b - a) * i / n);
+  const path = (pts) => { let d = '', px = null;
+    for (const [ra, dec] of pts) { const [x, y] = hammer(ra, dec); d += `${px === null || Math.abs(x - px) > 50 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`; px = x; }
+    return d; };
+  const grid = [-60, -30, 30, 60].map((dec) => path(steps(0.01, 359.99, 120).map((ra) => [ra, dec])))
+    .concat(steps(30, 330, 10).map((ra) => path(steps(-89.9, 89.9, 60).map((d) => [ra, d]))));
+  const eclPath = path(steps(0, 360, 180).map(ecl));
+  const pct = ([ra, dec]) => { const [x, y] = hammer(ra, dec); return [x / 2, y]; };
+  const map = $('skymap');
+  map.innerHTML = `<svg viewBox="0 0 200 100" aria-hidden="true">
+    <defs><radialGradient id="sky-g"><stop offset="0%" stop-color="#13213D"/><stop offset="100%" stop-color="#060A14"/></radialGradient>
+    <clipPath id="sky-c"><ellipse cx="100" cy="50" rx="100" ry="50"/></clipPath></defs>
+    <ellipse cx="100" cy="50" rx="100" ry="50" fill="url(#sky-g)"/>
+    <g clip-path="url(#sky-c)" fill="none">
+      <path d="${eclPath}" stroke="rgba(201,165,90,.14)" stroke-width="12.3"/>
+      ${grid.map((d) => `<path d="${d}" stroke="rgba(196,203,218,.1)" vector-effect="non-scaling-stroke"/>`).join('')}
+      <path d="${path(steps(0.01, 359.99, 120).map((ra) => [ra, 0]))}" stroke="rgba(196,203,218,.22)" vector-effect="non-scaling-stroke"/>
+      <path d="${path(steps(0, 360, 180).map(gal))}" stroke="rgba(196,203,218,.45)" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>
+      <path d="${eclPath}" stroke="#C9A55A" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+    </g>
+    <ellipse cx="100" cy="50" rx="100" ry="50" fill="none" stroke="rgba(201,165,90,.55)" vector-effect="non-scaling-stroke"/></svg>`;
+  const [ex, ey] = pct(ecl(235)), [gx, gy] = pct(gal(100));
+  map.insertAdjacentHTML('beforeend', `<span class="sky-lbl ecl" style="left:${ex}%;top:${ey}%" aria-hidden="true">Ecliptic</span>
+    <span class="sky-lbl" style="left:${gx}%;top:${gy}%" aria-hidden="true">Milky Way</span>`);
+  const placed = Object.entries(DATA.targets).map(([id, t]) => { const m = t.meta.target; const [left, top] = pct([m.ra, m.dec]); return { id, m, left, top }; });
+  const dots = {};
+  for (const p of placed) {
+    const lat = eclLat(p.m.ra, p.m.dec);
+    const where = Math.abs(lat) < 0.5 ? 'on the ecliptic' : `${Math.abs(lat).toFixed(0)}° ${lat > 0 ? 'north' : 'south'} of the ecliptic`;
+    const crowded = placed.some((o) => o !== p && o.left > p.left && o.left - p.left < 9 && Math.abs(o.top - p.top) < 8);
+    const b = el('button', { type: 'button', className: 'sky-dot' + (crowded ? ' left' : ''), title: `${p.m.name}, ${where}` },
+      `<i aria-hidden="true"></i><b aria-hidden="true">${p.m.messier}</b>`);
+    b.style.left = p.left + '%'; b.style.top = p.top + '%';
+    b.setAttribute('aria-label', `${p.m.messier} · ${p.m.name}, ${where}`);
+    b.addEventListener('click', () => { render(p.id); try { history.replaceState(null, '', '#' + p.id); } catch (e) {} });
+    map.appendChild(b); dots[p.id] = b;
+  }
+  return { select: (id) => Object.entries(dots).forEach(([k, b]) => b.setAttribute('aria-pressed', String(k === id))) };
+})();
+
+function render(id) {
+  stopBlink(); stopFlip();
+  SKY.select(id);
+  T = DATA.targets[id]; IMG = T.images; P = T.meta.passes; passIdx = 0; band = 'colour';
+  const m = T.meta.target, g = T.meta.grid, txt = TEXT[id];
+  select.value = id;
+  $('title').textContent = `${m.messier} through SPHEREx`;
+  document.title = `${m.messier} · SPHEREx Preview`;
+  $('lede').textContent = txt.lede;
+  $('coords').textContent = `RA ${fmtRA(m.ra)} · DEC ${fmtDec(m.dec)}`;
+  const total = T.meta.exposures.length;
+  const full = P.filter((p) => !p.short).length, short = P.length - full;
+  $('facts').innerHTML = [
+    [total, 'Exposures'], [full, 'Passes'], [short, 'Short visits'], [3, 'Detectors'],
+    [`${g.field_deg}°`, 'Field'], [`${T.meta.request_size_deg}°`, 'Requested'],
+  ].map(([v, l]) => `<div class="fact"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('raw-note').textContent = txt.raw;
+  $('aligned-note').textContent = txt.aligned;
+  $('diff-note').textContent = txt.diff;
+  $('blink-note').textContent = txt.blink;
+  $('time-h').textContent = `${total} exposures, ${P.length} visits`;
+  renderBlink(); renderRaw(); renderMatrix(); renderChart(); renderFlip(); renderDiffs();
+  $('footer-data').textContent = `${m.messier} · RA ${fmtRA(m.ra)} · DEC ${fmtDec(m.dec)} · grid ${g.pixels}×${g.pixels} at ${g.arcsec_per_pixel}″/px · processed ${DATA.processed}`;
+}
+
+// Plate 1: blink
+function renderBlink() {
+  const list = $('passlist'); list.innerHTML = '';
+  P.forEach((p, i) => {
+    const b = el('button', { className: 'passbtn', type: 'button' },
+      `<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 L13 7 L7 13 L1 7 Z"/></svg>${p.label}${shortTag(p)}<span class="data">${fmtDate(p.start)}${p.end !== p.start ? ' – ' + fmtDate(p.end) : ''}</span>`);
+    b.addEventListener('click', () => { stopBlink(); show(i); });
+    list.appendChild(b);
+  });
+  const seg = $('bandseg'); seg.innerHTML = '';
+  BANDS.forEach((b) => {
+    const btn = el('button', { className: 'btn', type: 'button', textContent: b.label });
+    btn.dataset.band = b.id;
+    btn.addEventListener('click', () => { band = b.id; show(passIdx); });
+    seg.appendChild(btn);
+  });
+  const wl = (key) => { const p = P.find((q) => q.wavelength_um[key] != null); return p ? p.wavelength_um[key].toFixed(2) : '—'; };
+  $('key').innerHTML = BANDS.slice(1).map((b) =>
+    `<div><span class="dot" style="background:${b.colour}"></span>${b.label} · ${b.name}<span class="data">${wl(b.key)} µm</span></div>`).join('');
+  show(0);
+}
+function show(i) {
+  passIdx = (i + P.length) % P.length;
+  const p = P[passIdx], m = T.meta.target;
+  const src = band === 'colour' ? `colour/pass${passIdx + 1}.png` : `aligned/pass${passIdx + 1}_${band}.png`;
+  const img = $('blink-img');
+  if (IMG[src]) {
+    img.src = IMG[src]; img.hidden = false;
+    img.alt = `${m.name}, ${p.label}, ${band === 'colour' ? 'three-detector colour' : band}, observed ${fmtDate(p.start)} to ${fmtDate(p.end)}`;
+  } else {
+    img.hidden = true; img.alt = '';
+  }
+  $('blink-badge').textContent = IMG[src] ? `${p.label} · ${passIdx + 1} of ${P.length}` : `No ${band} data`;
+  [...$('passlist').children].forEach((c, j) => c.setAttribute('aria-pressed', j === passIdx));
+  [...$('bandseg').children].forEach((c) => c.setAttribute('aria-pressed', c.dataset.band === band));
+}
+function stopBlink() { clearInterval(timer); timer = null; const b = $('blink-play'); b.setAttribute('aria-pressed', 'false'); b.textContent = 'Blink'; }
+$('blink-play').addEventListener('click', () => {
+  if (timer) return stopBlink();
+  timer = setInterval(() => show(passIdx + 1), 800);
+  const b = $('blink-play'); b.setAttribute('aria-pressed', 'true'); b.textContent = 'Pause';
+});
+$('blink-prev').addEventListener('click', () => { stopBlink(); show(passIdx - 1); });
+$('blink-next').addEventListener('click', () => { stopBlink(); show(passIdx + 1); });
+
+// Plate 2: raw cutouts, one row per visit
+function renderRaw() {
+  const raw = $('raw'); raw.innerHTML = '';
+  P.forEach((p, i) => {
+    const items = T.meta.raw.filter((r) => r.pass === i + 1);
+    if (!items.length) return;
+    const wrap = el('div', {}, `<p class="rowhead" style="margin:${i ? 18 : 0}px 0 8px">${p.label}${shortTag(p)}</p>`);
+    const grid = el('div', { className: 'grid three', style: 'max-width:720px' });
+    items.forEach((r) => {
+      grid.appendChild(el('figure', {}, `<div class="sky"><img class="px" src="${IMG[r.file]}" alt="Raw D3 cutout of ${T.meta.target.name} from ${r.date} UTC, rotated ${r.angle_deg}°"></div>
+        <figcaption>${r.date} UTC<br><b>${r.angle_deg > 0 ? '+' : ''}${r.angle_deg}°</b> · ${r.shape[1]}×${r.shape[0]} px · ${r.wavelength_um.toFixed(2)} µm</figcaption>`));
+    });
+    wrap.appendChild(grid);
+    raw.appendChild(wrap);
+  });
+}
+
+// Plate 3: matrix of aligned images
+function renderMatrix() {
+  const matrix = $('matrix'); matrix.innerHTML = '';
+  matrix.appendChild(el('span'));
+  BANDS.slice(1).forEach((b) => matrix.appendChild(el('span', { className: 'colhead' },
+    `<span class="dot" style="display:inline-block;vertical-align:-1px;margin-right:6px;background:${b.colour}"></span>${b.label}`)));
+  P.forEach((p, i) => {
+    matrix.appendChild(el('span', { className: 'rowlabel', textContent: p.label }));
+    BANDS.slice(1).forEach((b) => {
+      const src = IMG[`aligned/pass${i + 1}_${b.id}.png`];
+      matrix.appendChild(src
+        ? el('figure', {}, `<div class="sky"><img src="${src}" alt="${T.meta.target.name} ${p.label}, ${b.label}, north up"></div>
+            <figcaption>${p.per_band[b.key]} exp · <b>${p.wavelength_um[b.key].toFixed(2)} µm</b></figcaption>`)
+        : el('figure', {}, `<div class="empty-cell">No ${b.label} images in this visit</div><figcaption>0 exp</figcaption>`));
+    });
+  });
+}
+
+// Plate 4: date × wavelength scatter, drawn to scale
+function renderChart() {
+  const svg = $('chart'); svg.innerHTML = '';
+  const W = 960, H = 360, L = 56, R = 20, T0 = 36, B = 44;
+  const times = T.meta.exposures.map((e) => Date.parse(e.date + ':00Z'));
+  const first = new Date(Math.min(...times)), last = new Date(Math.max(...times));
+  const t0 = Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1);
+  const t1 = Date.UTC(last.getUTCFullYear(), last.getUTCMonth() + 1, 1);
+  const x = (ms) => L + (ms - t0) / (t1 - t0) * (W - L - R);
+  const y = (um) => H - B - (um - 0.5) / (5.25 - 0.5) * (H - T0 - B);
+  const NS = 'http://www.w3.org/2000/svg';
+  const add = (tag, a, text) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (text) e.textContent = text; svg.appendChild(e); return e; };
+  P.forEach((p) => {
+    const a = x(Date.parse(p.start + 'T00:00:00Z')) - 6, b = x(Date.parse(p.end + 'T00:00:00Z') + 864e5) + 6;
+    add('rect', { x: a, y: T0 - 22, width: b - a, height: H - B - T0 + 22, fill: 'rgba(201,165,90,0.08)', stroke: 'rgba(201,165,90,0.35)', 'stroke-dasharray': p.short ? '3 3' : 'none' });
+    add('text', { x: (a + b) / 2, y: T0 - 8, 'text-anchor': 'middle', fill: '#E3C88A', 'font-family': 'Josefin Sans, sans-serif', 'font-size': p.short ? 10 : 12, 'font-weight': 600, 'letter-spacing': p.short ? 1 : 2 }, p.short ? 'SHORT' : p.label.toUpperCase());
+  });
+  [1, 2, 3, 4, 5].forEach((um) => {
+    add('line', { x1: L, x2: W - R, y1: y(um), y2: y(um), stroke: 'rgba(196,203,218,0.12)' });
+    add('text', { x: L - 10, y: y(um) + 4, 'text-anchor': 'end', fill: '#C4CBDA', 'font-family': 'Courier Prime, monospace', 'font-size': 12 }, `${um} µm`);
+  });
+  const d = new Date(t0);
+  for (let ms = t0; ms <= t1; ) {
+    add('line', { x1: x(ms), x2: x(ms), y1: H - B, y2: H - B + 5, stroke: '#9AA5BD' });
+    add('text', { x: x(ms), y: H - B + 20, 'text-anchor': 'middle', fill: '#C4CBDA', 'font-family': 'Courier Prime, monospace', 'font-size': 12 },
+      new Date(ms).toLocaleDateString('en-GB', { month: 'short', year: '2-digit', timeZone: 'UTC' }));
+    d.setUTCMonth(d.getUTCMonth() + 2); ms = d.getTime();
+  }
+  add('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: '#9AA5BD' });
+  const fill = { 'SPHEREx-D1': '#5AA0FF', 'SPHEREx-D3': '#F4EFE2', 'SPHEREx-D6': '#FFB000' };
+  T.meta.exposures.forEach((e) => {
+    const c = add('circle', { cx: x(Date.parse(e.date + ':00Z')), cy: y(e.wavelength_um), r: 4, fill: fill[e.band], 'fill-opacity': 0.85, stroke: '#0A1324', 'stroke-width': 1 });
+    c.appendChild(Object.assign(document.createElementNS(NS, 'title'), { textContent: `${e.band.replace('SPHEREx-', '')} · ${e.date} UTC · ${e.wavelength_um} µm` }));
+  });
+  $('legend').innerHTML = BANDS.slice(1).map((b) =>
+    `<span><span class="dot" style="background:${b.colour}"></span>${b.label} · ${b.name.toLowerCase()} wavelengths</span>`).join('') +
+    (P.some((p) => p.short) ? '<span>Dashed box · short visit</span>' : '');
+}
+
+// Plate 5: flipbook
+function renderFlip() { $('flip-range').max = T.meta.frames.length - 1; showFrame(0); }
+function showFrame(i) {
+  const frames = T.meta.frames, f = frames[i];
+  $('flip-range').value = i;
+  const img = $('flip-img');
+  img.src = IMG[f.file];
+  img.alt = `${T.meta.target.name} D3 exposure ${i + 1} of ${frames.length}, ${f.date} UTC`;
+  $('flip-badge').textContent = `${i + 1} / ${frames.length}`;
+  $('flip-readout').innerHTML = `
+    <dt>Visit</dt><dd class="data">${f.label}</dd>
+    <dt>Taken</dt><dd class="data">${f.date} UTC</dd>
+    <dt>Wavelength</dt><dd class="data">${f.wavelength_um.toFixed(3)} µm</dd>
+    <dt>Coverage</dt><dd class="data">${Math.round(f.coverage * 100)}% of field</dd>`;
+}
+$('flip-range').addEventListener('input', (e) => { stopFlip(); showFrame(+e.target.value); });
+function stopFlip() { clearInterval(flipTimer); flipTimer = null; const b = $('flip-play'); b.setAttribute('aria-pressed', 'false'); b.textContent = 'Play frames'; }
+$('flip-play').addEventListener('click', () => {
+  if (flipTimer) return stopFlip();
+  flipTimer = setInterval(() => showFrame((+$('flip-range').value + 1) % T.meta.frames.length), 260);
+  const b = $('flip-play'); b.setAttribute('aria-pressed', 'true'); b.textContent = 'Pause';
+});
+
+// Plate 6: differences
+function renderDiffs() {
+  const diffs = $('diffs'); diffs.innerHTML = '';
+  for (let i = 1; i < P.length; i++) {
+    const src = IMG[`diff/pass${i}-to-${i + 1}.png`];
+    if (!src) continue;
+    diffs.appendChild(el('figure', {}, `<div class="sky"><img src="${src}" alt="Difference image, ${P[i].label} minus ${P[i - 1].label}"></div>
+      <figcaption><b>${P[i].label} − ${P[i - 1].label}</b></figcaption>`));
+  }
+  diffs.appendChild(el('figure', {}, `<div class="sky"><img src="${IMG['aligned/pass1_D3.png']}" alt="Reference: ${P[0].label} in D3"></div><figcaption>Reference · <b>${P[0].label}, D3</b></figcaption>`));
+}
+
+const start = (location.hash || '').slice(1);
+render(DATA.targets[start] ? start : Object.keys(DATA.targets)[0]);
+</script>

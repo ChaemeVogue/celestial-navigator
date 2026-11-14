@@ -1,0 +1,86 @@
+.log {
+  margin-top: var(--gap);
+}
+
+.log__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.log__record {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--brass-light);
+}
+
+.log__scroll {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.log__table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.log__table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-muted);
+}
+
+.log__table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-faint);
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+.log__note {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: 17px;
+}
+
+.log__status {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.log__status--candidate,
+.log__status--confirmed {
+  border-color: var(--brass);
+  color: var(--brass-light);
+}
+
+.log__status--unreviewed {
+  border-color: var(--text-faint);
+  color: var(--text-faint);
+}
+
+.log__placeholder td {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--text-faint);
+  border-bottom: 1px dashed var(--border-faint);
+}

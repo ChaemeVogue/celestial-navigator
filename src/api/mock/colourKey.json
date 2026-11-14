@@ -1,0 +1,20 @@
+[
+  {
+    "band": "D1",
+    "colour": "#5AA0FF",
+    "label": "Shortest band (D1)",
+    "wavelength": "~0.9 µm"
+  },
+  {
+    "band": "D3",
+    "colour": "#F4EFE2",
+    "label": "Middle band (D3)",
+    "wavelength": "~2.0 µm"
+  },
+  {
+    "band": "D6",
+    "colour": "#FFB000",
+    "label": "Longest band (D6)",
+    "wavelength": "~4.7 µm"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "_mock": "MOCK DATA: placeholder dates, images and candidate. Replace with the backend.",
+  "targetId": "m51",
+  "fieldSizeDeg": 0.1,
+  "passes": [
+    {
+      "id": "m51-pass-1",
+      "label": "Pass I",
+      "date": "2025-05-28T00:00:00Z",
+      "imageUrl": "/mock/images/m51/pass-1.svg"
+    },
+    {
+      "id": "m51-pass-2",
+      "label": "Pass II",
+      "date": "2025-11-27T00:00:00Z",
+      "imageUrl": "/mock/images/m51/pass-2.svg"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "SX-004",
+      "positions": [
+        {
+          "passId": "m51-pass-1",
+          "x": 30,
+          "y": 30
+        },
+        {
+          "passId": "m51-pass-2",
+          "x": 37,
+          "y": 32
+        }
+      ],
+      "note": "Amber point shifting east, clear of the companion galaxy.",
+      "status": "candidate"
+    }
+  ],
+  "simulated": true
+}

@@ -1,0 +1,250 @@
+.sky-plate {
+  margin: 0;
+}
+
+/* Double brass frame: outer border + inset inner border */
+.sky-plate__frame {
+  position: relative;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--brass);
+}
+
+.sky-plate__frame::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid var(--border-faint);
+  pointer-events: none;
+}
+
+/* Art Deco corner brackets */
+.sky-plate__corner {
+  position: absolute;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-color: var(--brass-light);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.sky-plate__corner::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--brass);
+  transform: rotate(45deg);
+}
+
+.sky-plate__corner--tl {
+  top: -4px;
+  left: -4px;
+  border-width: 2px 0 0 2px;
+}
+.sky-plate__corner--tr {
+  top: -4px;
+  right: -4px;
+  border-width: 2px 2px 0 0;
+}
+.sky-plate__corner--bl {
+  bottom: -4px;
+  left: -4px;
+  border-width: 0 0 2px 2px;
+}
+.sky-plate__corner--br {
+  bottom: -4px;
+  right: -4px;
+  border-width: 0 2px 2px 0;
+}
+.sky-plate__corner--tl::after,
+.sky-plate__corner--bl::after {
+  left: 6px;
+}
+.sky-plate__corner--tr::after,
+.sky-plate__corner--br::after {
+  right: 6px;
+}
+.sky-plate__corner--tl::after,
+.sky-plate__corner--tr::after {
+  top: 6px;
+}
+.sky-plate__corner--bl::after,
+.sky-plate__corner--br::after {
+  bottom: 6px;
+}
+
+/* Sky area: square to match SPHEREx cutouts; fixed so frames never jump */
+.sky-plate__sky {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: radial-gradient(circle, var(--sky-inner), var(--sky-outer) 70%);
+}
+
+.sky-plate__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sky-plate__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(201, 165, 90, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(201, 165, 90, 0.12) 1px, transparent 1px);
+  background-size: 25% 25%;
+  pointer-events: none;
+}
+
+.sky-plate__compass {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--brass-light);
+}
+
+.sky-plate__compass--n {
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sky-plate__compass--e {
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+}
+
+.sky-plate__badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 12px;
+  background: rgba(10, 19, 36, 0.8);
+  border: 1px solid var(--border-soft);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--brass-light);
+}
+
+/* Placeholder targets only (mock data); real SPHEREx targets never show this. */
+.sky-plate__simulated {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 12px;
+  background: rgba(10, 19, 36, 0.8);
+  border: 1px dashed var(--text-faint);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-muted);
+}
+
+.sky-plate__scale {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-data);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.sky-plate__scale-bar {
+  width: 100%;
+  height: 6px;
+  border: 1px solid var(--text-muted);
+  border-top: none;
+}
+
+.sky-plate__marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.sky-plate__marker-ring {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border: 1.5px dashed var(--brass-light);
+  border-radius: 50%;
+}
+
+.sky-plate__marker-label {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
+  transform: translateY(-50%);
+  padding: 2px 6px;
+  background: rgba(10, 19, 36, 0.75);
+  font-family: var(--font-data);
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--brass-light);
+}
+
+.sky-plate__message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--text-muted);
+}
+
+.sky-plate__retry {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0 20px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--brass-light);
+}
+
+.sky-plate__retry:hover {
+  border-color: var(--brass);
+}
+
+@media (max-width: 480px) {
+  .sky-plate__badge,
+  .sky-plate__simulated {
+    top: 8px;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .sky-plate__badge {
+    right: 8px;
+  }
+  .sky-plate__simulated {
+    left: 8px;
+  }
+  .sky-plate__marker-ring {
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "m101",
+    "messier": "M101",
+    "name": "Pinwheel Galaxy",
+    "kind": "face-on spiral galaxy",
+    "ra": 210.80227,
+    "dec": 54.34895
+  },
+  {
+    "id": "m104",
+    "messier": "M104",
+    "name": "Sombrero Galaxy",
+    "kind": "edge-on spiral galaxy",
+    "ra": 189.9976,
+    "dec": -11.6231
+  },
+  {
+    "id": "m45",
+    "messier": "M45",
+    "name": "Pleiades",
+    "kind": "open star cluster",
+    "ra": 56.75,
+    "dec": 24.1167
+  },
+  {
+    "id": "m1",
+    "messier": "M1",
+    "name": "Crab Nebula",
+    "kind": "supernova remnant",
+    "ra": 83.6331,
+    "dec": 22.0145
+  },
+  {
+    "id": "m16",
+    "messier": "M16",
+    "name": "Pillars of Creation",
+    "kind": "dust pillar in the Eagle Nebula",
+    "ra": 274.7125,
+    "dec": -13.835
+  },
+  {
+    "id": "m31",
+    "messier": "M31",
+    "name": "Andromeda Galaxy",
+    "kind": "large spiral galaxy",
+    "ra": 10.6847,
+    "dec": 41.2688
+  },
+  {
+    "id": "m42",
+    "messier": "M42",
+    "name": "Orion Nebula",
+    "kind": "star-forming nebula",
+    "ra": 83.8221,
+    "dec": -5.3911
+  },
+  {
+    "id": "m51",
+    "messier": "M51",
+    "name": "Whirlpool Galaxy",
+    "kind": "interacting spiral galaxy",
+    "ra": 202.4696,
+    "dec": 47.1952
+  }
+]

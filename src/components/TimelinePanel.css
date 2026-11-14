@@ -1,0 +1,122 @@
+.timeline__list {
+  position: relative;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Brass spine running through the diamonds */
+.timeline__list::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 21px;
+  width: 1px;
+  background: var(--border-soft);
+}
+
+.timeline__pass {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 6px 12px 6px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  text-align: left;
+}
+
+.timeline__pass:hover {
+  border-color: var(--border-faint);
+}
+
+.timeline__pass[aria-pressed='true'] {
+  background: rgba(201, 165, 90, 0.08);
+  border-color: var(--border-soft);
+}
+
+.timeline__diamond {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: var(--panel);
+  stroke: var(--brass);
+  stroke-width: 1.5;
+}
+
+.timeline__pass[aria-pressed='true'] .timeline__diamond {
+  fill: var(--brass);
+}
+
+.timeline__pass-label {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.timeline__pass-date {
+  margin-left: auto;
+  font-family: var(--font-data);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.timeline__pass[aria-pressed='true'] .timeline__pass-date {
+  color: var(--brass-light);
+}
+
+.timeline__controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.timeline__step,
+.timeline__play {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--brass-light);
+}
+
+.timeline__step:hover,
+.timeline__play:hover {
+  border-color: var(--brass);
+}
+
+.timeline__play {
+  flex: 1;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+}
+
+.timeline__play[aria-pressed='true'] {
+  background: var(--brass);
+  color: var(--bg);
+}
+
+.timeline__step:disabled,
+.timeline__play:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Short visits sit between full passes: smaller and quieter, but still selectable. */
+.timeline__pass--short .timeline__diamond {
+  width: 10px;
+  height: 10px;
+  margin-inline: 2px;
+}
+
+.timeline__pass--short .timeline__pass-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}

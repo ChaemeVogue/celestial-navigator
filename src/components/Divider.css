@@ -1,0 +1,18 @@
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--gap);
+}
+
+.divider__line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-soft);
+}
+
+.divider__diamonds {
+  width: 56px;
+  height: 12px;
+  flex: none;
+}

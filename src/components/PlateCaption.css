@@ -1,0 +1,35 @@
+.plate-caption {
+  margin-top: 12px;
+  padding: 16px 20px;
+  background: var(--panel-deep);
+  border: 1px solid var(--border-faint);
+  border-left: 3px solid var(--brass);
+}
+
+.plate-caption__text {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.plate-caption__data {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin-top: 10px;
+  font-family: var(--font-data);
+  font-size: 13px;
+  color: var(--brass-light);
+}
+
+.plate-caption__data span:not(:last-child)::after {
+  content: '·';
+  margin: 0 10px;
+  color: var(--text-faint);
+}
+
+.plate-caption--empty {
+  min-height: 108px;
+}

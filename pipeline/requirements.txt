@@ -1,0 +1,7 @@
+# Tested with Python 3.9 (macOS system Python) and these versions.
+numpy==1.26.4
+scipy==1.13.1
+astropy==6.0.1
+astroquery==0.4.11
+reproject==0.13.0
+pillow==11.3.0

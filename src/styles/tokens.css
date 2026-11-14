@@ -1,0 +1,37 @@
+/* Design tokens: "Chart Room × Logbook" (plan.md section 3) */
+:root {
+  /* Colour */
+  --bg: #0a1324; /* page background */
+  --panel: #101c33; /* panels */
+  --panel-deep: #0e1930; /* plate caption background */
+  --sky-inner: #13213d; /* sky gradient centre */
+  --sky-outer: #060a14; /* sky gradient edge */
+  --brass: #c9a55a; /* borders, accents, selected fills */
+  --brass-light: #e3c88a; /* data values, highlighted text, link hover */
+  --text: #ede6d3; /* primary text */
+  --text-muted: #c4cbda; /* secondary text */
+  --text-faint: #9aa5bd; /* placeholders, unreviewed rows */
+  --border-soft: rgba(201, 165, 90, 0.55);
+  --border-faint: rgba(201, 165, 90, 0.25);
+
+  /* Type */
+  --font-display: 'Poiret One', 'Josefin Sans', sans-serif;
+  --font-ui: 'Josefin Sans', system-ui, sans-serif;
+  --font-note: 'EB Garamond', Georgia, serif;
+  --font-data: 'Courier Prime', ui-monospace, monospace;
+
+  --tracking-title: 7px;
+  --tracking-label: 3px;
+
+  /* Space & shape */
+  --gutter: 16px;
+  --gap: 24px;
+  --max-width: 1320px;
+  --tap: 44px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+  }
+}
