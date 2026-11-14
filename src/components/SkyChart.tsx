@@ -1,4 +1,7 @@
+import { useRef, type ReactNode } from 'react'
 import type { Target } from '../api/types'
+import { useElementWidth } from '../hooks/useElementWidth'
+import { placeLabels, type Box, type LabelItem } from '../utils/labelLayout'
 import {
   eclipticLatitude,
   eclipticToEquatorial,
@@ -6,11 +9,15 @@ import {
   hammer,
 } from '../utils/sky'
 import { toRoman } from '../utils/coords'
+import type { BodyId, BodyPosition } from '../utils/planets'
+import PlanetIcon, { PlanetIconDefs } from './PlanetIcon'
 import './SkyChart.css'
 
 type Props = {
   targets: Target[]
   selectedTarget: Target | null
+  bodies: BodyPosition[] // Sun, Moon and planets for the chosen date
+  footer?: ReactNode // extra controls shown in the key row (the planet date)
   onSelect: (id: string) => void
 }
 
@@ -85,8 +92,33 @@ const BACKGROUND_STARS = (() => {
 
 // Hours along the equator, as Roman numerals, chosen to sit clear of the current targets
 const HOUR_LABELS = [21, 15, 9, 3].map((h) => ({ text: toRoman(h), ...toPercent(h * 15, 0) }))
-const ECLIPTIC_LABEL = toPercent(...eclipticToEquatorial(235, 0))
 const MILKY_WAY_LABEL = toPercent(...galacticPlaneToEquatorial(100))
+
+// Which planet names win when space is tight (most familiar first)
+const LABEL_PRIORITY: BodyId[] = [
+  'sun',
+  'moon',
+  'jupiter',
+  'saturn',
+  'mars',
+  'venus',
+  'mercury',
+  'uranus',
+  'neptune',
+]
+// Drawing order: big icons first, so a small planet in conjunction stays visible on top
+const DRAW_ORDER: BodyId[] = [
+  'sun',
+  'jupiter',
+  'saturn',
+  'moon',
+  'venus',
+  'uranus',
+  'neptune',
+  'mars',
+  'mercury',
+]
+const NARROW_CHART = 520 // matches the container query in SkyChart.css, where names hide
 
 const describeLatitude = (lat: number) =>
   Math.abs(lat) < 0.5
@@ -105,12 +137,55 @@ function Flourish({ className }: { className: string }) {
   )
 }
 
-export default function SkyChart({ targets, selectedTarget, onSelect }: Props) {
+export default function SkyChart({ targets, selectedTarget, bodies, footer, onSelect }: Props) {
+  const mapRef = useRef<HTMLDivElement>(null)
+  const width = useElementWidth(mapRef)
+  const height = (width * VIEW_H) / VIEW_W
+
   const placed = targets.map((t) => ({ target: t, ...toPercent(t.ra, t.dec) }))
+  const placedBodies = bodies
+    .map((b) => ({ body: b, ...toPercent(b.ra, b.dec) }))
+    .sort((a, b) => DRAW_ORDER.indexOf(a.body.id) - DRAW_ORDER.indexOf(b.body.id))
+  const crowdedTarget = (left: number, top: number) =>
+    placed.some((o) => o.left > left && o.left - left < 8 && Math.abs(o.top - top) < 7)
+
+  // Planet names: in pixels, avoid every star, planet and target name, in priority order.
+  const bodySide = new Map<BodyId, string>()
+  if (width > NARROW_CHART) {
+    const px = (left: number, top: number) => ({ x: (left / 100) * width, y: (top / 100) * height })
+    const iconR = Math.min(16, Math.max(11, width * 0.016)) // half the icon size in SkyChart.css
+    const obstacles: Box[] = []
+    for (const { target, left, top } of placed) {
+      const { x, y } = px(left, top)
+      obstacles.push({ x: x - 7, y: y - 7, w: 14, h: 14 })
+      const w = target.messier.length * 12
+      obstacles.push(
+        crowdedTarget(left, top)
+          ? { x: x - w / 2, y: y - 26, w, h: 16 }
+          : { x: x + 12, y: y - 8, w, h: 16 },
+      )
+    }
+    for (const { left, top } of placedBodies) {
+      const { x, y } = px(left, top)
+      obstacles.push({ x: x - iconR, y: y - iconR, w: iconR * 2, h: iconR * 2 })
+    }
+    const ordered = [...placedBodies].sort(
+      (a, b) => LABEL_PRIORITY.indexOf(a.body.id) - LABEL_PRIORITY.indexOf(b.body.id),
+    )
+    const items: LabelItem[] = ordered.map(({ body, left, top }) => ({
+      ...px(left, top),
+      r: iconR,
+      w: body.name.length * 8.4 + 2,
+      h: 18,
+    }))
+    // A label starts just outside its own icon, so the icon never blocks its own name.
+    const sides = placeLabels(items, obstacles, { x: 0, y: 0, w: width, h: height })
+    ordered.forEach(({ body }, i) => bodySide.set(body.id, sides[i] ?? 'hidden'))
+  }
 
   return (
     <figure className="sky-chart">
-      <div className="sky-chart__map">
+      <div className="sky-chart__map" ref={mapRef}>
         <svg
           className="sky-chart__svg"
           viewBox={`${-PAD_X} ${-PAD_Y} ${VIEW_W} ${VIEW_H}`}
@@ -213,12 +288,6 @@ export default function SkyChart({ targets, selectedTarget, onSelect }: Props) {
             </span>
           ))}
           <span
-            className="sky-chart__curve-label sky-chart__curve-label--ecliptic"
-            style={{ left: `${ECLIPTIC_LABEL.left}%`, top: `${ECLIPTIC_LABEL.top}%` }}
-          >
-            Ecliptic
-          </span>
-          <span
             className="sky-chart__curve-label"
             style={{ left: `${MILKY_WAY_LABEL.left}%`, top: `${MILKY_WAY_LABEL.top}%` }}
           >
@@ -226,16 +295,33 @@ export default function SkyChart({ targets, selectedTarget, onSelect }: Props) {
           </span>
         </div>
 
+        <PlanetIconDefs />
+        {/* Planets sit under the target stars, so a click on a target always wins */}
+        <div className="sky-chart__bodies">
+          {placedBodies.map(({ body, left, top }) => {
+            const side = bodySide.get(body.id) ?? 'right'
+            return (
+              <span
+                key={body.id}
+                className={`sky-chart__body sky-chart__body--label-${side}`}
+                style={{ left: `${left}%`, top: `${top}%` }}
+                role="img"
+                aria-label={body.name}
+                title={body.name}
+              >
+                <PlanetIcon id={body.id} />
+                <span className="sky-chart__body-name" aria-hidden="true">
+                  {body.name}
+                </span>
+              </span>
+            )
+          })}
+        </div>
+
         <div className="sky-chart__targets" role="group" aria-label="Targets on the sky chart">
           {placed.map(({ target, left, top }) => {
             // Put the name above if another target sits close by on the right (M101 and M51, M1 and M45).
-            const crowded = placed.some(
-              (o) =>
-                o.target !== target &&
-                o.left > left &&
-                o.left - left < 8 &&
-                Math.abs(o.top - top) < 7,
-            )
+            const crowded = crowdedTarget(left, top)
             const selected = target.id === selectedTarget?.id
             const lat = eclipticLatitude(target.ra, target.dec)
             return (
@@ -268,6 +354,7 @@ export default function SkyChart({ targets, selectedTarget, onSelect }: Props) {
           <span className="sky-chart__swatch sky-chart__swatch--milky-way" aria-hidden="true" />
           Milky Way
         </span>
+        {footer}
       </figcaption>
     </figure>
   )

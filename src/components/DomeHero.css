@@ -61,17 +61,118 @@
 /* As wide as possible while the whole first screen still fits (the chart is ~1.84:1) */
 .dome__chart {
   margin-top: clamp(0px, 1vh, 12px);
-  width: min(100%, 1180px, calc((100svh - 450px) * 1.84));
+  width: min(100%, 1180px, calc((100svh - 480px) * 1.84));
   min-width: min(100%, 540px); /* on short or zoomed screens, let the page scroll instead */
+}
+
+/* ---------- Planet date ---------- */
+
+.dome__date {
+  display: flex;
+  flex-wrap: wrap;
+  font-style: normal;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+}
+
+.dome__date-label {
+  white-space: nowrap;
+  font-family: var(--font-note);
+  font-style: italic;
+  font-size: var(--fs-note-small);
+  color: var(--text-muted);
+}
+
+.dome__date-label strong {
+  font-family: var(--font-data);
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--fs-small);
+  color: var(--brass-light);
+}
+
+.dome__date-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 300px;
+  max-width: 420px;
+}
+
+.dome__date-button {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-ui);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--brass-light);
+}
+
+.dome__date-button:hover {
+  border-color: var(--brass);
+}
+
+.dome__date-button[aria-pressed='true'] {
+  background: var(--brass);
+  color: var(--bg);
+}
+
+/* Brass slider: thin engraved track, diamond-ish thumb */
+.dome__date-range {
+  flex: 1;
+  min-width: 120px;
+  height: var(--tap);
+  margin: 0;
+  background: transparent;
+  accent-color: var(--brass);
+  cursor: pointer;
+}
+
+.dome__date-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--border-soft);
+}
+
+.dome__date-range::-moz-range-track {
+  height: 2px;
+  background: var(--border-soft);
+}
+
+.dome__date-range::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -7px;
+  background: var(--brass-light);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--brass);
+  appearance: none;
+}
+
+.dome__date-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--brass-light);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--brass);
 }
 
 /* ---------- Instruction ---------- */
 
+/* "Choose a star" and the list share one line where there's room */
 .dome__prompt {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 10px 28px;
 }
 
 .dome__instruction {

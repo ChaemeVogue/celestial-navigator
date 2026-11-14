@@ -1,5 +1,8 @@
+import { useEffect, useMemo, useState } from 'react'
 import type { Target } from '../api/types'
 import type { LoadStatus } from '../hooks/useExplorer'
+import { formatDate } from '../utils/dates'
+import { skyBodies } from '../utils/planets'
 import SkyChart from './SkyChart'
 import './DomeHero.css'
 
@@ -12,6 +15,16 @@ type Props = {
   onContinue: () => void // scroll to whatever comes next: the plate, or the story
 }
 
+const DAY_MS = 86400000
+// The slider covers SPHEREx's mission so far: launch (11 March 2025) to two years on.
+const MISSION_START = Date.UTC(2025, 2, 11)
+const MISSION_DAYS = 730
+const PLAY_STEP_DAYS = 2
+const PLAY_INTERVAL_MS = 60
+
+const todayIndex = () =>
+  Math.min(MISSION_DAYS, Math.max(0, Math.round((Date.now() - MISSION_START) / DAY_MS)))
+
 // The landing view: the whole sky as a painted dome, and one thing to do, pick a star.
 export default function DomeHero({
   targets,
@@ -21,6 +34,72 @@ export default function DomeHero({
   onRetry,
   onContinue,
 }: Props) {
+  // Planets on the chart move with this date (days since launch)
+  const [day, setDay] = useState(todayIndex)
+  const [playing, setPlaying] = useState(false)
+  const date = new Date(MISSION_START + day * DAY_MS)
+  const bodies = useMemo(() => skyBodies(new Date(MISSION_START + day * DAY_MS)), [day])
+
+  // Play sweeps the date forward, a couple of days per tick, and stops at the end.
+  useEffect(() => {
+    if (!playing) return
+    const timer = setInterval(() => {
+      setDay((d) => {
+        if (d + PLAY_STEP_DAYS >= MISSION_DAYS) {
+          setPlaying(false)
+          return MISSION_DAYS
+        }
+        return d + PLAY_STEP_DAYS
+      })
+    }, PLAY_INTERVAL_MS)
+    return () => clearInterval(timer)
+  }, [playing])
+
+  // Sits in the chart's key row, so it doesn't add another line under the dome
+  const dateControl = (
+    <div className="dome__date">
+      <label className="dome__date-label" htmlFor="planet-date">
+        Planets on <strong>{formatDate(date.toISOString())}</strong>
+      </label>
+      <div className="dome__date-controls">
+        <button
+          type="button"
+          className="dome__date-button"
+          aria-pressed={playing}
+          onClick={() => {
+            if (!playing && day >= MISSION_DAYS) setDay(0)
+            setPlaying((p) => !p)
+          }}
+        >
+          {playing ? 'Pause' : 'Play'}
+        </button>
+        <input
+          id="planet-date"
+          className="dome__date-range"
+          type="range"
+          min={0}
+          max={MISSION_DAYS}
+          value={day}
+          aria-valuetext={formatDate(date.toISOString())}
+          onChange={(e) => {
+            setPlaying(false)
+            setDay(Number(e.target.value))
+          }}
+        />
+        <button
+          type="button"
+          className="dome__date-button"
+          onClick={() => {
+            setPlaying(false)
+            setDay(todayIndex())
+          }}
+        >
+          Today
+        </button>
+      </div>
+    </div>
+  )
+
   return (
     <header className="dome" id="dome">
       <div className="dome__cartouche">
@@ -29,7 +108,13 @@ export default function DomeHero({
       </div>
 
       <div className="dome__chart">
-        <SkyChart targets={targets} selectedTarget={selectedTarget} onSelect={onSelect} />
+        <SkyChart
+          targets={targets}
+          selectedTarget={selectedTarget}
+          bodies={bodies}
+          onSelect={onSelect}
+          footer={dateControl}
+        />
       </div>
 
       <div className="dome__prompt" aria-live="polite">
