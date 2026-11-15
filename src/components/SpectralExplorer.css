@@ -1,0 +1,135 @@
+.spectral-explorer {
+  margin: 28px 0;
+  padding: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+}
+.spectral-explorer h2,
+.spectral-explorer h3 {
+  color: var(--brass-light);
+}
+.spectral-explorer p {
+  line-height: 1.6;
+}
+.spectral-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: end;
+}
+.spectral-controls label {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 180px;
+}
+.spectral-controls input,
+.spectral-explorer button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--brass);
+  background: var(--panel-deep);
+  color: var(--text);
+  font: inherit;
+}
+.spectral-explorer button {
+  cursor: pointer;
+  color: var(--brass-light);
+}
+.spectral-explorer button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.spectral-note {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.spectral-placeholder {
+  padding: 30px;
+  text-align: center;
+  border: 1px dashed var(--border-soft);
+  color: var(--brass-light);
+}
+.spectral-maps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.spectral-map,
+.spectrum {
+  margin: 0;
+}
+.spectral-map canvas {
+  width: min(100%, 480px);
+  height: auto;
+  image-rendering: pixelated;
+  display: block;
+  margin-top: 12px;
+}
+.spectral-map figcaption,
+.spectrum figcaption {
+  color: var(--brass-light);
+  line-height: 1.5;
+}
+.spectral-map output {
+  font-family: var(--font-data);
+  font-size: 0.85rem;
+}
+.spectral-map p {
+  font-size: 0.85rem;
+}
+.spectrum {
+  margin-top: 24px;
+}
+.spectrum svg {
+  width: 100%;
+  height: auto;
+  color: var(--text-muted);
+}
+.spectrum svg text {
+  fill: currentColor;
+  font-size: 12px;
+}
+.spectral-toggle {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+  align-items: center;
+}
+.spectral-explorer a {
+  color: var(--brass-light);
+}
+@media (max-width: 650px) {
+  .spectral-maps {
+    grid-template-columns: 1fr;
+  }
+  .spectral-explorer {
+    padding: 16px;
+  }
+}
+
+.spectral-map img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 12px;
+}
+.spectral-map--median {
+  max-width: 620px;
+  margin: 24px auto;
+}
+.spectral-map--galex {
+  max-width: 840px;
+  margin: 16px auto;
+}
+
+.spectral-map canvas {
+  width: 100%;
+  max-width: 840px;
+  image-rendering: auto;
+}
+@media (max-width: 850px) {
+  .spectral-maps {
+    grid-template-columns: 1fr;
+  }
+}

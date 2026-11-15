@@ -18,11 +18,15 @@ export type Pass = {
   id: string // "m101-pass-1"
   label: string // "Pass I", or "Short visit"
   date: string // ISO 8601: the visit's mean observation time, from time_bounds_lower (MJD)
+  previewUrl?: string
+  bandPreviewUrls?: Record<string, string>
   imageUrl: string // processed, browser-ready image (square PNG/WebP)
   // Each detector alone as a greyscale image, keyed by ColourKeyEntry.band ("D1").
   // A band is missing when the visit has no images in it. Omitted for simulated targets.
   bandImageUrls?: Record<string, string>
   // A brief revisit (about a day, few images, sometimes missing a band) between full passes.
+  // Unstretched aligned CNAR binary planes (legacy JSON supported), top row first; masked pixels stay missing.
+  bandPixelUrls?: Record<string, string>
   short?: boolean
 }
 

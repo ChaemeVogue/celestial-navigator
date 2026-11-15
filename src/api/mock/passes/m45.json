@@ -12,6 +12,12 @@
         "D1": "/mock/images/m45/pass-1-d1.png",
         "D3": "/mock/images/m45/pass-1-d3.png",
         "D6": "/mock/images/m45/pass-1-d6.png"
+      },
+      "previewUrl": "/mock/images/m45/pass-1-preview-d4ef57d993d7f7ef.webp",
+      "bandPreviewUrls": {
+        "D1": "/mock/images/m45/pass-1-d1-preview-66ceafabc1c8b3f2.webp",
+        "D3": "/mock/images/m45/pass-1-d3-preview-435f7a0e322fd35e.webp",
+        "D6": "/mock/images/m45/pass-1-d6-preview-b3d6353fcfb84893.webp"
       }
     },
     {
@@ -23,6 +29,12 @@
         "D1": "/mock/images/m45/pass-2-d1.png",
         "D3": "/mock/images/m45/pass-2-d3.png",
         "D6": "/mock/images/m45/pass-2-d6.png"
+      },
+      "previewUrl": "/mock/images/m45/pass-2-preview-f8a127543d9359a6.webp",
+      "bandPreviewUrls": {
+        "D1": "/mock/images/m45/pass-2-d1-preview-a6804edb525c5b80.webp",
+        "D3": "/mock/images/m45/pass-2-d3-preview-2dbf9c5d4f6962c9.webp",
+        "D6": "/mock/images/m45/pass-2-d6-preview-75839b36da5e1283.webp"
       }
     },
     {
@@ -34,6 +46,12 @@
         "D1": "/mock/images/m45/pass-3-d1.png",
         "D3": "/mock/images/m45/pass-3-d3.png",
         "D6": "/mock/images/m45/pass-3-d6.png"
+      },
+      "previewUrl": "/mock/images/m45/pass-3-preview-c70e4c78ad438049.webp",
+      "bandPreviewUrls": {
+        "D1": "/mock/images/m45/pass-3-d1-preview-63d7ac7c4fa00ad7.webp",
+        "D3": "/mock/images/m45/pass-3-d3-preview-fb3fb42f7fb1f923.webp",
+        "D6": "/mock/images/m45/pass-3-d6-preview-70f9a14c8313724e.webp"
       }
     }
   ],

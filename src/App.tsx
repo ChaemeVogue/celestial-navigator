@@ -1,3 +1,6 @@
+import { useNearViewport } from './hooks/useNearViewport'
+import SpectralExplorer from './components/SpectralExplorer'
+import ImageComparison from './components/ImageComparison'
 import Header from './components/Header'
 import Divider from './components/Divider'
 import TargetBar from './components/TargetBar'
@@ -5,13 +8,13 @@ import SkyPlate from './components/SkyPlate'
 import PlateCaption from './components/PlateCaption'
 import TimelinePanel from './components/TimelinePanel'
 import ColourKeyPanel from './components/ColourKeyPanel'
-import ObservationLog from './components/ObservationLog'
 import { useExplorer } from './hooks/useExplorer'
 import { usePreloadImages } from './hooks/usePreloadImages'
 import { hasBandImages, imageForBand } from './utils/bands'
 
 export default function App() {
   const explorer = useExplorer()
+  const [plateRef, plateVisible] = useNearViewport<HTMLDivElement>()
   const passes = explorer.passesData?.passes ?? []
   // The chosen band applies only where single-detector images exist (not simulated targets).
   const bandsAvailable = hasBandImages(passes)
@@ -19,7 +22,9 @@ export default function App() {
     ? (explorer.colourKey.find((c) => c.band === explorer.band) ?? null)
     : null
   const framesReady = usePreloadImages(
-    passes.map((p) => imageForBand(p, band?.band ?? null)).filter((url) => url !== null),
+    passes.map((p) => imageForBand(p, band?.band ?? null) ?? ''),
+    explorer.passIndex,
+    plateVisible,
   )
   const targetsFailed = explorer.targetsStatus === 'error'
 
@@ -38,7 +43,7 @@ export default function App() {
           onRetry={explorer.retryTargets}
         />
         <div className="main-row">
-          <div className="plate-column">
+          <div className="plate-column" ref={plateRef}>
             <SkyPlate
               target={explorer.selectedTarget}
               passesData={explorer.passesData}
@@ -75,7 +80,19 @@ export default function App() {
             />
           </aside>
         </div>
-        <ObservationLog target={explorer.selectedTarget} passesData={explorer.passesData} />
+        {explorer.selectedTarget && (
+          <SpectralExplorer
+            key={`chemistry-${explorer.selectedTarget.id}`}
+            target={explorer.selectedTarget}
+          />
+        )}
+        {explorer.passesStatus === 'ready' && explorer.passesData && explorer.selectedTarget && (
+          <ImageComparison
+            key={`comparison-${explorer.selectedTarget.id}`}
+            data={explorer.passesData}
+            target={explorer.selectedTarget}
+          />
+        )}
       </main>
     </div>
   )

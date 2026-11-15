@@ -7,7 +7,7 @@ type Props = {
   passes: Pass[]
   passIndex: number
   isPlaying: boolean
-  canPlay: boolean // false until every pass image has preloaded
+  canPlay: boolean // false until the selected and next images have loaded
   onSelectPass: (i: number) => void
   onPrev: () => void
   onNext: () => void
@@ -85,7 +85,7 @@ export default function TimelinePanel({
           className="timeline__play"
           aria-pressed={isPlaying}
           onClick={onTogglePlay}
-          disabled={!canStep || !canPlay}
+          disabled={!canStep || (!canPlay && !isPlaying)}
         >
           {isPlaying ? 'Pause' : canPlay || !canStep ? 'Play through time' : 'Loading frames…'}
         </button>

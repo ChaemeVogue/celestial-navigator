@@ -1,3 +1,6 @@
+import { isImageReady, preloadImage } from '../utils/imageQueue'
+import { imageForBand, hasBandImages } from '../utils/bands'
+import { beginTarget } from '../utils/performance'
 import { useCallback, useEffect, useState } from 'react'
 import { getColourKey, getPasses, getTargets } from '../api/client'
 import type { ColourKeyEntry, PassesResponse, Target } from '../api/types'
@@ -34,7 +37,10 @@ export function useExplorer() {
         if (cancelled) return
         setTargets(list)
         setTargetsStatus('ready')
-        setSelectedId((current) => current ?? list[0]?.id ?? null)
+        setSelectedId((current) => {
+          if (!current && list[0]) beginTarget(list[0].id)
+          return current ?? list[0]?.id ?? null
+        })
       })
       .catch(() => {
         if (!cancelled) setTargetsStatus('error')
@@ -80,12 +86,23 @@ export function useExplorer() {
   useEffect(() => {
     if (!isPlaying || passCount < 2) return
     const timer = setInterval(() => {
-      setPassIndexState((i) => (i + 1) % passCount)
+      setPassIndexState((i) => {
+        const next = (i + 1) % passCount
+        const pass = passesData?.passes[next]
+        const selectedBand = passesData && hasBandImages(passesData.passes) ? band : null
+        const url = pass ? (imageForBand(pass, selectedBand) ?? '') : ''
+        if (!isImageReady(url)) {
+          void preloadImage(url, 'high')
+          return i
+        }
+        return next
+      })
     }, PLAY_INTERVAL_MS)
     return () => clearInterval(timer)
-  }, [isPlaying, passCount, selectedId])
+  }, [isPlaying, passCount, selectedId, passesData, band])
 
   const selectTarget = useCallback((id: string) => {
+    beginTarget(id)
     setIsPlaying(false)
     setPassIndexState(0)
     setPassesData(null)

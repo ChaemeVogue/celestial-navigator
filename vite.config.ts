@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
       // In dev, forward API calls and processed images to Django so the browser sees
       // one origin: no CORS setup needed, and relative image paths just work.
       proxy: {
+        '/science': { target: 'http://127.0.0.1:8001', changeOrigin: true, timeout: 300000 },
         '/api': { target: backend, changeOrigin: true },
         '/media': { target: backend, changeOrigin: true },
       },

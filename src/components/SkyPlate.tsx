@@ -1,3 +1,4 @@
+import ProgressiveImage from './ProgressiveImage'
 import type { ColourKeyEntry, PassesResponse, Target } from '../api/types'
 import type { LoadStatus } from '../hooks/useExplorer'
 import { imageForBand } from '../utils/bands'
@@ -66,9 +67,11 @@ export default function SkyPlate({
     content = (
       <>
         {src ? (
-          <img
+          <ProgressiveImage
             className="sky-plate__image"
             src={src}
+            preview={band ? pass.bandPreviewUrls?.[band.band] : pass.previewUrl}
+            targetId={target.id}
             alt={`${target.name}, ${pass.label} (${passIndex + 1} of ${total})${bandText}, observed ${formatDate(pass.date)}`}
           />
         ) : (

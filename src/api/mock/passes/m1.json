@@ -12,6 +12,12 @@
         "D1": "/mock/images/m1/pass-1-d1.png",
         "D3": "/mock/images/m1/pass-1-d3.png",
         "D6": "/mock/images/m1/pass-1-d6.png"
+      },
+      "previewUrl": "/mock/images/m1/pass-1-preview-b14f296ec439cf4d.webp",
+      "bandPreviewUrls": {
+        "D1": "/mock/images/m1/pass-1-d1-preview-7edc013843e4ca9b.webp",
+        "D3": "/mock/images/m1/pass-1-d3-preview-dc4f1c04b29208ae.webp",
+        "D6": "/mock/images/m1/pass-1-d6-preview-2b2a885766856230.webp"
       }
     },
     {
@@ -23,6 +29,12 @@
         "D1": "/mock/images/m1/pass-2-d1.png",
         "D3": "/mock/images/m1/pass-2-d3.png",
         "D6": "/mock/images/m1/pass-2-d6.png"
+      },
+      "previewUrl": "/mock/images/m1/pass-2-preview-bbad35ad10e3085e.webp",
+      "bandPreviewUrls": {
+        "D1": "/mock/images/m1/pass-2-d1-preview-3515ed46b0520fba.webp",
+        "D3": "/mock/images/m1/pass-2-d3-preview-623163c1491df239.webp",
+        "D6": "/mock/images/m1/pass-2-d6-preview-ff7e2c4a16081051.webp"
       }
     },
     {
@@ -34,6 +46,12 @@
         "D1": "/mock/images/m1/pass-3-d1.png",
         "D3": "/mock/images/m1/pass-3-d3.png",
         "D6": "/mock/images/m1/pass-3-d6.png"
+      },
+      "previewUrl": "/mock/images/m1/pass-3-preview-ed9b682f7cdb1308.webp",
+      "bandPreviewUrls": {
+        "D1": "/mock/images/m1/pass-3-d1-preview-38201280ffa01ffd.webp",
+        "D3": "/mock/images/m1/pass-3-d3-preview-aeddd10a40fa2fec.webp",
+        "D6": "/mock/images/m1/pass-3-d6-preview-9365958e0188ffe2.webp"
       }
     }
   ],

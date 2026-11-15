@@ -34,7 +34,6 @@ export default function Header() {
       </a>
       <nav className="header__nav" aria-label="Main">
         <a href="#chart">The Chart</a>
-        <a href="#log">Observation Log</a>
         <a href="#colours">About the Colours</a>
       </nav>
     </header>

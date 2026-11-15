@@ -10,12 +10,6 @@ const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '')
 
 const mockPasses = import.meta.glob<PassesResponse>('./mock/passes/*.json', { import: 'default' })
 
-// 300–600ms, so loading states are exercised from day one.
-function delay<T>(value: T): Promise<T> {
-  const ms = 300 + Math.random() * 300
-  return new Promise((resolve) => setTimeout(() => resolve(value), ms))
-}
-
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { headers: { Accept: 'application/json' } })
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status} ${res.statusText}`)
@@ -24,7 +18,7 @@ async function get<T>(path: string): Promise<T> {
 
 export async function getTargets(): Promise<Target[]> {
   if (!USE_MOCKS) return get<Target[]>('/api/targets')
-  return delay(mockTargets)
+  return mockTargets
 }
 
 // Django may return image paths relative to itself ("/media/m101/pass-1.png").
@@ -43,6 +37,17 @@ export async function getPasses(targetId: string): Promise<PassesResponse> {
       passes: data.passes.map((p) => ({
         ...p,
         imageUrl: resolveImageUrl(p.imageUrl),
+        previewUrl: p.previewUrl && resolveImageUrl(p.previewUrl),
+        bandPreviewUrls:
+          p.bandPreviewUrls &&
+          Object.fromEntries(
+            Object.entries(p.bandPreviewUrls).map(([band, url]) => [band, resolveImageUrl(url)]),
+          ),
+        bandPixelUrls:
+          p.bandPixelUrls &&
+          Object.fromEntries(
+            Object.entries(p.bandPixelUrls).map(([band, url]) => [band, resolveImageUrl(url)]),
+          ),
         bandImageUrls:
           p.bandImageUrls &&
           Object.fromEntries(
@@ -53,10 +58,10 @@ export async function getPasses(targetId: string): Promise<PassesResponse> {
   }
   const load = mockPasses[`./mock/passes/${targetId}.json`]
   if (!load) throw new Error(`No mock passes for target "${targetId}"`)
-  return delay(await load())
+  return load()
 }
 
 export async function getColourKey(): Promise<ColourKeyEntry[]> {
   if (!USE_MOCKS) return get<ColourKeyEntry[]>('/api/colour-key')
-  return delay(mockColourKey)
+  return mockColourKey
 }

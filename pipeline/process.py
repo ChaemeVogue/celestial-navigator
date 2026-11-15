@@ -3,6 +3,8 @@ import json
 import math
 import os
 import warnings
+import sys
+import gzip
 
 import numpy as np
 from astropy.io import fits
@@ -12,7 +14,10 @@ from PIL import Image
 from scipy import ndimage
 from reproject import reproject_interp
 
-from config import BANDS, COLOURS, FIELD_DEG, PASS_GAP_DAYS, REQUEST_SIZE, STRETCH, load_target
+from config import REPO, BANDS, COLOURS, FIELD_DEG, PASS_GAP_DAYS, REQUEST_SIZE, STRETCH, load_target
+
+sys.path.insert(0, os.path.join(REPO, 'science'))
+from assets import encode_array
 
 T = load_target()
 RA, DEC = T["ra"], T["dec"]
@@ -50,7 +55,10 @@ def load(c):
         flags = hdul["FLAGS"].data
         header = hdul["IMAGE"].header
     data = img - zodi  # remove the smooth zodiacal-light background
-    data[flags & ~0 & 0b1 > 0] = np.nan  # bit 0: invalid pixel
+    # Conservative quality mask; SOURCE (bit 21) is valid astronomical signal.
+    bad_bits = (0, 1, 2, 6, 7, 9, 10, 11, 14, 15, 17, 19, 20, 22, 23, 24, 25, 26, 27, 28)
+    bad_mask = sum(1 << bit for bit in bad_bits)
+    data[(flags & bad_mask) != 0] = np.nan
     wcs = WCS(header)
     # rotation of the detector on the sky, from the CD/PC matrix
     pc = wcs.wcs.get_pc() * wcs.wcs.get_cdelt()[:, None] if wcs.wcs.has_pc() else wcs.wcs.cd
@@ -101,7 +109,17 @@ for pi, group in enumerate(passes):
         c["_aligned"] = arr
 
 # One combined image per pass per band (median rejects cosmic rays / hot pixels).
-combined = {k: fill_holes(np.nanmedian(np.array(v), axis=0)) for k, v in stack.items()}
+science_combined = {k: np.nanmedian(np.array(v), axis=0) for k, v in stack.items()}
+# Preserve missing pixels and unstretched surface brightness for comparisons.
+for (pi, band), arr in science_combined.items():
+    values = np.flipud(arr).ravel()
+    payload = encode_array(values, N, N)
+    with open(f"{OUT}/aligned/pass{pi + 1}_{band[-2:]}.bin", "wb") as f:
+        f.write(payload)
+    with open(f"{OUT}/aligned/pass{pi + 1}_{band[-2:]}.bin.gz", "wb") as f:
+        f.write(gzip.compress(payload, mtime=0))
+
+combined = {k: fill_holes(v) for k, v in science_combined.items()}
 
 # Stretch limits per band, shared by all passes so brightness doesn't flicker.
 limits = {}
