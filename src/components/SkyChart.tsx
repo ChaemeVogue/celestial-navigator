@@ -246,24 +246,22 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
         {/* Planets sit under the target stars, so a click on a target always wins */}
         <div className="sky-chart__bodies">
           {placedBodies.map(({ body, left, top }) => {
-            // Names show on hover; near the right edge they open to the left
+            // Names show on hover; near the right edge they open to the left.
+            // Known issue (to fix later): when two planets overlap (a conjunction, e.g. Mars
+            // in front of Jupiter), hovering the big one enlarges it over the small one, and
+            // the small one is hard to point at.
             const side = left > 80 ? 'left' : 'right'
-            // Planets close together (a conjunction) overlap, so name them all in one tag
-            const together = placedBodies
-              .filter((o) => Math.abs(o.left - left) < 2 && Math.abs(o.top - top) < 3.5)
-              .map((o) => o.body.name)
-            const tag = [body.name, ...together.filter((n) => n !== body.name)].join(' & ')
             return (
               <span
                 key={body.id}
                 className={`sky-chart__body sky-chart__body--label-${side}`}
                 style={{ left: `${left}%`, top: `${top}%` }}
                 role="img"
-                aria-label={tag}
+                aria-label={body.name}
               >
                 <PlanetIcon id={body.id} />
                 <span className="sky-chart__body-name" aria-hidden="true">
-                  {tag}
+                  {body.name}
                 </span>
               </span>
             )
