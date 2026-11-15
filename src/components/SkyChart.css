@@ -159,9 +159,8 @@
 .sky-chart__curve-label {
   position: absolute;
   transform: translate(-50%, -150%);
-  font-family: var(--font-note);
-  font-style: italic;
-  font-size: 18px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
   white-space: nowrap;
   color: var(--text-faint);
 }
@@ -184,6 +183,11 @@
   width: clamp(26px, 3.8cqw, 38px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
+  pointer-events: none; /* only the drawn planet reacts, not the empty square around it */
+}
+
+.sky-chart__body .planet-icon * {
+  pointer-events: visiblePainted;
 }
 
 /* Pointing at a planet brings it forward, enlarges it and shows its name */
@@ -212,12 +216,11 @@
   position: absolute;
   left: calc(100% + 8px);
   padding: 3px 8px 4px;
-  background: rgba(6, 10, 20, 0.85);
+  background: rgba(6, 10, 20, 0.9);
   border: 1px solid var(--border-faint);
-  font-family: var(--font-note);
-  font-style: italic;
-  font-size: 18px;
-  line-height: 1;
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  line-height: 1.2;
   color: var(--text);
   white-space: nowrap;
   pointer-events: none;
@@ -291,27 +294,38 @@
   animation: none;
 }
 
+/* Names stay hidden until you point at a star (or select it), like the planets */
 .sky-chart__name {
+  display: none;
   position: absolute;
-  left: calc(100% - 4px);
+  left: calc(100% + 2px);
+  padding: 3px 8px 4px;
+  background: rgba(6, 10, 20, 0.9);
+  border: 1px solid var(--border-faint);
   font-family: var(--font-engraved);
   font-size: 15px;
   letter-spacing: 1px;
-  color: var(--text-muted);
+  line-height: 1.2;
+  color: var(--brass-light);
   white-space: nowrap;
   pointer-events: none;
-  text-shadow: 0 0 4px var(--sky-outer);
+}
+
+.sky-chart__target:hover,
+.sky-chart__target:focus-visible {
+  z-index: 2;
+}
+
+.sky-chart__target:hover .sky-chart__name,
+.sky-chart__target:focus-visible .sky-chart__name,
+.sky-chart__target[aria-pressed='true'] .sky-chart__name {
+  display: block;
 }
 
 .sky-chart__target--label-above .sky-chart__name {
   bottom: calc(100% - 6px);
   left: 50%;
   transform: translateX(-50%);
-}
-
-.sky-chart__target:hover .sky-chart__name,
-.sky-chart__target[aria-pressed='true'] .sky-chart__name {
-  color: var(--brass-light);
 }
 
 /* ---------- Key ---------- */
@@ -321,12 +335,17 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px 28px;
-  margin-top: 10px;
-  font-family: var(--font-note);
-  font-style: italic;
-  font-size: var(--fs-note-small);
+  gap: 8px 28px;
+  margin-top: 12px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
   color: var(--text-muted);
+}
+
+.sky-chart__hint {
+  flex-basis: 100%;
+  text-align: center;
+  color: var(--text-faint);
 }
 
 .sky-chart__key {
@@ -337,8 +356,8 @@
 
 .sky-chart__swatch {
   flex: none;
-  width: 22px;
-  height: 10px;
+  width: 30px;
+  height: 12px;
 }
 
 .sky-chart__swatch--band {
@@ -346,22 +365,15 @@
   box-shadow: inset 0 -5px 0 -4px var(--brass);
 }
 
+/* a short dotted line, like the Milky Way's line on the chart, with bigger dots */
 .sky-chart__swatch--milky-way {
-  height: 2px;
-  background-image: radial-gradient(circle, rgba(237, 230, 211, 0.7) 1px, transparent 1.2px);
-  background-size: 5px 2px;
+  height: 4px;
+  background-image: radial-gradient(circle, rgba(237, 230, 211, 0.85) 1.6px, transparent 2px);
+  background-size: 7px 4px;
 }
 
-/* On narrow charts, names would collide: show only the selected one (and any hovered or focused) */
+/* On narrow charts, drop the hour numerals and shrink curve labels */
 @container (max-width: 520px) {
-  .sky-chart__name {
-    display: none;
-  }
-  .sky-chart__target[aria-pressed='true'] .sky-chart__name,
-  .sky-chart__target:hover .sky-chart__name,
-  .sky-chart__target:focus-visible .sky-chart__name {
-    display: block;
-  }
   .sky-chart__curve-label {
     font-size: 15px;
   }

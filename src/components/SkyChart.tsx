@@ -248,18 +248,22 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
           {placedBodies.map(({ body, left, top }) => {
             // Names show on hover; near the right edge they open to the left
             const side = left > 80 ? 'left' : 'right'
+            // Planets close together (a conjunction) overlap, so name them all in one tag
+            const together = placedBodies
+              .filter((o) => Math.abs(o.left - left) < 2 && Math.abs(o.top - top) < 3.5)
+              .map((o) => o.body.name)
+            const tag = [body.name, ...together.filter((n) => n !== body.name)].join(' & ')
             return (
               <span
                 key={body.id}
                 className={`sky-chart__body sky-chart__body--label-${side}`}
                 style={{ left: `${left}%`, top: `${top}%` }}
                 role="img"
-                aria-label={body.name}
-                title={body.name}
+                aria-label={tag}
               >
                 <PlanetIcon id={body.id} />
                 <span className="sky-chart__body-name" aria-hidden="true">
-                  {body.name}
+                  {tag}
                 </span>
               </span>
             )
@@ -280,7 +284,6 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
                 style={{ left: `${left}%`, top: `${top}%` }}
                 aria-pressed={selected}
                 aria-label={`${target.messier} · ${target.name}, ${describeLatitude(lat)}`}
-                title={`${target.name}, ${describeLatitude(lat)}`}
                 onClick={() => onSelect(target.id)}
               >
                 <span className="sky-chart__dot" aria-hidden="true" />
@@ -294,14 +297,16 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
       </div>
 
       <figcaption className="sky-chart__caption">
+        <span className="label">Key</span>
         <span className="sky-chart__key">
           <span className="sky-chart__swatch sky-chart__swatch--band" aria-hidden="true" />
           Ecliptic: where planets and asteroids travel
         </span>
         <span className="sky-chart__key">
           <span className="sky-chart__swatch sky-chart__swatch--milky-way" aria-hidden="true" />
-          Milky Way
+          Milky Way: our galaxy's crowded disc
         </span>
+        <span className="sky-chart__hint">Point at a star or planet to see its name</span>
         {footer}
       </figcaption>
     </figure>

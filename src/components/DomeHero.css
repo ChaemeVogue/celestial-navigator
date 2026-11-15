@@ -78,9 +78,8 @@
 
 .dome__date-label {
   white-space: nowrap;
-  font-family: var(--font-note);
-  font-style: italic;
-  font-size: var(--fs-note-small);
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
   color: var(--text-muted);
 }
 
@@ -193,9 +192,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px 12px;
-  font-family: var(--font-note);
-  font-style: italic;
-  font-size: var(--fs-note-small);
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
   color: var(--text-faint);
 }
 
