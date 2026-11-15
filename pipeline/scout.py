@@ -15,7 +15,7 @@ from astropy.time import Time
 
 from config import BANDS, PASS_GAP_DAYS, REQUEST_SIZE, TARGETS_JSON
 from irsa import sia_images
-from passes import group_passes, is_short
+from passes import cap_per_band, group_passes, is_short
 
 warnings.simplefilter("ignore")
 solar_system_ephemeris.set("builtin")
@@ -48,27 +48,36 @@ def distance_to_edge(ra0, dec0, s_region):
     return best
 
 
-def scout(name, ra, dec):
+SECONDS_PER_CUTOUT = 1.5  # measured: 48 cutouts in 50–90 s, 8 at a time, plus a retry round
+SECONDS_FIXED = 30  # starting up, then reprojecting and rendering
+
+
+def summarize(ra, dec, max_per_band=None, images=None):
+    """What SPHEREx has at a spot, as data (server.py serves this as /api/scout).
+    With max_per_band, the download estimate is for the thinned-out set a spot gets.
+    `images` is an IRSA listing already fetched with irsa.sia_images, if any."""
     here = SkyCoord(ra * u.deg, dec * u.deg)
-    ecl = here.transform_to(GeocentricTrueEcliptic()).lat.deg
-    gal = here.galactic.b.deg
-    images = sia_images(ra, dec)
+    images = sia_images(ra, dec) if images is None else images
     ours = [im for im in images if im["band"] in BANDS]
-    notes = []
-
-    print(f"\n{name}  RA {ra:.5f}  Dec {dec:+.5f}")
-    print(f"  Ecliptic latitude {ecl:+6.1f}°   Galactic latitude {gal:+6.1f}°")
-    counts = "  ".join(f"D{b[-1]} {sum(im['band'] == b for im in images)}" for b in ALL_DETECTORS)
-    print(f"  Images (Data Release 1): {counts}")
-    print(f"  Using D1/D3/D6: {len(ours)} cutouts, about {len(ours) * MB_PER_CUTOUT:.0f} MB to download")
-
+    summary = {
+        "ra": ra,
+        "dec": dec,
+        "eclipticLat": round(here.transform_to(GeocentricTrueEcliptic()).lat.deg, 2),
+        "galacticLat": round(here.galactic.b.deg, 2),
+        "imagesByDetector": {f"D{b[-1]}": sum(im["band"] == b for im in images) for b in ALL_DETECTORS},
+        "images": len(ours),
+        "visits": [],
+        "passes": 0,
+        "shortVisits": 0,
+        "notes": [],
+    }
+    notes = summary["notes"]
     if not ours:
-        print("  ! No Data Release 1 images here yet")
-        return {"name": name, "images": 0}
+        summary.update(downloadCount=0, downloadMB=0, estimateSeconds=0)
+        return summary
 
-    groups = group_passes(ours, BANDS)
     n_pass = n_short = 0
-    for g in groups:
+    for g in group_passes(ours, BANDS):
         short = is_short(g)
         if short:
             label = "Short visit"
@@ -76,10 +85,16 @@ def scout(name, ra, dec):
         else:
             n_pass += 1
             label = f"Pass {n_pass}"
-        start, end = Time(g[0]["mjd"], format="mjd"), Time(g[-1]["mjd"], format="mjd")
         span = g[-1]["mjd"] - g[0]["mjd"]
-        per_band = "  ".join(f"D{b[-1]} {sum(im['band'] == b for im in g):2d}" for b in BANDS)
-        print(f"    {label:12s} {start.iso[:10]} → {end.iso[:10]}  {span:4.0f} d  {len(g):3d} images  {per_band}")
+        summary["visits"].append({
+            "label": label,
+            "short": short,
+            "start": Time(g[0]["mjd"], format="mjd").iso[:10],
+            "end": Time(g[-1]["mjd"], format="mjd").iso[:10],
+            "days": round(span, 1),
+            "images": len(g),
+            "perBand": {f"D{b[-1]}": sum(im["band"] == b for im in g) for b in BANDS},
+        })
         missing = [b[-2:] for b in BANDS if not any(im["band"] == b for im in g)]
         if missing and not short:
             notes.append(f"{label} has no {', '.join(missing)} images")
@@ -91,9 +106,9 @@ def scout(name, ra, dec):
             sep = get_body(body, mid).separation(here).deg
             if sep < NEAR_PLANET_DEG:
                 notes.append(f"{body.title()} is {sep:.2f}° away during {label}: glare or a bright mover")
+    summary["passes"], summary["shortVisits"] = n_pass, n_short
 
-    print(f"  Visits: {n_pass} passes" + (f" + {n_short} short" if n_short else ""))
-
+    ecl, gal = summary["eclipticLat"], summary["galacticLat"]
     clipped = sum(distance_to_edge(ra, dec, im["s_region"]) < REQUEST_SIZE / 2 for im in ours)
     if clipped:
         notes.append(f"{clipped} of {len(ours)} cutouts reach past an image edge (partly empty)")
@@ -108,9 +123,30 @@ def scout(name, ra, dec):
     if min(ra, 360 - ra) < REQUEST_SIZE:
         notes.append("on the 0h/24h line: check that nothing wraps the wrong way")
 
-    for n in notes:
+    n = len(cap_per_band(ours, BANDS, max_per_band)) if max_per_band else len(ours)
+    summary.update(downloadCount=n, downloadMB=round(n * MB_PER_CUTOUT),
+                   estimateSeconds=round(SECONDS_FIXED + n * SECONDS_PER_CUTOUT))
+    return summary
+
+
+def scout(name, ra, dec):
+    s = summarize(ra, dec)
+    print(f"\n{name}  RA {ra:.5f}  Dec {dec:+.5f}")
+    print(f"  Ecliptic latitude {s['eclipticLat']:+6.1f}°   Galactic latitude {s['galacticLat']:+6.1f}°")
+    counts = "  ".join(f"{d} {n}" for d, n in s["imagesByDetector"].items())
+    print(f"  Images (Data Release 1): {counts}")
+    print(f"  Using D1/D3/D6: {s['images']} cutouts, about {s['downloadMB']:.0f} MB to download")
+    if not s["images"]:
+        print("  ! No Data Release 1 images here yet")
+        return s
+    for v in s["visits"]:
+        per_band = "  ".join(f"{d} {n:2d}" for d, n in v["perBand"].items())
+        print(f"    {v['label']:12s} {v['start']} → {v['end']}  {v['days']:4.0f} d  "
+              f"{v['images']:3d} images  {per_band}")
+    print(f"  Visits: {s['passes']} passes" + (f" + {s['shortVisits']} short" if s["shortVisits"] else ""))
+    for n in s["notes"]:
         print(f"  ! {n}")
-    return {"name": name, "images": len(ours), "passes": n_pass, "short": n_short, "notes": notes}
+    return s
 
 
 def main(args):

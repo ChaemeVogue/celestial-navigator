@@ -62,6 +62,30 @@ or very many visits, cutouts that run off an image edge, a bright planet or the 
 the asteroid band, the Milky Way, the celestial poles and the 0h/24h line. Each warning is
 an assumption the pipeline or app makes that this spot might break.
 
+## Any spot, and the on-demand backend
+
+Any position works, not just targets in `targets.json`:
+
+```bash
+pipeline/.venv/bin/python pipeline/run.py --ra 161.25 --dec 58
+```
+
+It runs as `spot_161.2500_58.0000`, keeps at most 8 exposures per detector per pass (about
+190 MB, 1.5–2 minutes), works in `pipeline/data/spots/<id>/` and writes the plates and
+`passes.json` to `pipeline/data/media/<id>/`, never into the app's bundled mock data.
+
+The backend runs this for the app whenever someone types coordinates that aren't a built-in
+target:
+
+```bash
+pipeline/.venv/bin/python pipeline/server.py
+```
+
+Then `npm run dev` in another terminal. It listens on port 8000, which the Vite dev server
+already forwards `/api` and `/media` to. Each spot's log is
+`pipeline/data/spots/<id>/log.txt`. Endpoints, rules and limits are in
+[../docs/backend-notes.md](../docs/backend-notes.md#on-demand-backend-any-coordinates-built).
+
 ## Settings
 
 All in `config.py`: detectors and colours, the 0.1° field, the 0.15° request size, the
