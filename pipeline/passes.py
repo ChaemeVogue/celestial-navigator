@@ -1,4 +1,4 @@
-# How exposures are grouped into passes. Used by process.py.
+# How exposures are grouped into passes. Shared by process.py and scout.py.
 from config import PASS_GAP_DAYS
 
 SHORT_VISIT_IMAGES = 20  # fewer exposures than this...

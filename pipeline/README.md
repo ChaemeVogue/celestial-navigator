@@ -46,6 +46,22 @@ pipeline/.venv/bin/python pipeline/build_report.py
 
 It writes `pipeline/data/report.html`, a single file with all images embedded.
 
+## Scout first
+
+Before processing a new spot, see what SPHEREx has there. It takes about a second per spot
+and downloads nothing:
+
+```bash
+pipeline/.venv/bin/python pipeline/scout.py rdra barnard
+pipeline/.venv/bin/python pipeline/scout.py --at 270 66.56 "North ecliptic pole"
+```
+
+For each spot it prints the image counts per detector, how the images group into passes
+(dates, counts, which bands), the download size, and warnings: missing bands, very long
+or very many visits, cutouts that run off an image edge, a bright planet or the Moon nearby,
+the asteroid band, the Milky Way, the celestial poles and the 0h/24h line. Each warning is
+an assumption the pipeline or app makes that this spot might break.
+
 ## Settings
 
 All in `config.py`: detectors and colours, the 0.1° field, the 0.15° request size, the
