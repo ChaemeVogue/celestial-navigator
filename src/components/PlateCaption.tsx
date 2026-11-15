@@ -9,6 +9,7 @@ type Props = {
   colourKey: ColourKeyEntry[]
   band: ColourKeyEntry | null // null = colour composite
   difference?: { from: Pass; to: Pass; band: string } | null // set in the Difference view
+  spectral?: boolean // the Spectral view (All light)
 }
 
 // "a face-on spiral galaxy", "an open star cluster"
@@ -29,6 +30,7 @@ export default function PlateCaption({
   colourKey,
   band,
   difference = null,
+  spectral = false,
 }: Props) {
   const pass = passesData?.passes[passIndex]
 
@@ -37,6 +39,23 @@ export default function PlateCaption({
       <div className="plate-caption plate-caption--empty" aria-hidden="true">
         <p className="plate-caption__text">&nbsp;</p>
         <p className="plate-caption__data">&nbsp;</p>
+      </div>
+    )
+  }
+
+  if (spectral) {
+    return (
+      <div className="plate-caption">
+        <p className="plate-caption__text">
+          Spectral map, all light: every SPHEREx visit and all 102 of its colours combined into one
+          picture of how bright the field is. Dark purple is faint, yellow is bright.
+        </p>
+        <p className="plate-caption__data">
+          <span>RA {formatRA(target.ra)}</span>
+          <span>DEC {formatDec(target.dec)}</span>
+          <span>SOURCE SPHEREx DR1 all-sky cube</span>
+          <span>FIELD {passesData.fieldSizeDeg}°</span>
+        </p>
       </div>
     )
   }
