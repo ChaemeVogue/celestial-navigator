@@ -109,14 +109,17 @@
   stroke-width: 1px;
 }
 
+/* Square caps run each end a little past the rim; the oval clip then trims it flush,
+   instead of the band stopping in an angled cut just inside the edge */
 .sky-chart__band {
   stroke: rgba(201, 165, 90, 0.13);
-  stroke-linecap: butt;
+  stroke-linecap: square;
 }
 
 .sky-chart__ecliptic {
   stroke: var(--brass);
   stroke-width: 1.5px;
+  stroke-linecap: square;
 }
 
 .sky-chart__milky-way {
@@ -161,8 +164,14 @@
   transform: translate(-50%, -150%);
   font-family: var(--font-ui);
   font-size: var(--fs-small);
+  letter-spacing: 0.5px;
   white-space: nowrap;
-  color: var(--text-faint);
+  color: var(--text-muted);
+  /* soft dark halo so it reads over grid lines and stars */
+  text-shadow:
+    0 0 3px var(--sky-outer),
+    0 0 6px var(--sky-outer),
+    0 0 10px var(--sky-outer);
 }
 
 .sky-chart__curve-label--ecliptic {

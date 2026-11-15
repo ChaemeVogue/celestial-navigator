@@ -90,7 +90,8 @@ const BACKGROUND_STARS = (() => {
 
 // Hours along the equator, as Roman numerals, chosen to sit clear of the current targets
 const HOUR_LABELS = [21, 15, 9, 3].map((h) => ({ text: toRoman(h), ...toPercent(h * 15, 0) }))
-const MILKY_WAY_LABEL = toPercent(...galacticPlaneToEquatorial(100))
+// A clear stretch of the Milky Way, away from the rim, the numerals and the targets
+const MILKY_WAY_LABEL = toPercent(...galacticPlaneToEquatorial(60))
 
 // Drawing order: big icons first, so a small planet in conjunction stays visible on top
 const DRAW_ORDER: BodyId[] = [
