@@ -12,7 +12,12 @@ from PIL import Image
 from scipy import ndimage
 from reproject import reproject_interp
 
-from config import BANDS, COLOURS, FIELD_DEG, PASS_GAP_DAYS, REQUEST_SIZE, STRETCH, load_target
+from config import BANDS, COLOURS, FIELD_DEG, REQUEST_SIZE, STRETCH, load_target
+from passes import group_passes, is_short
+
+
+def roman(n):
+    return "I II III IV V VI VII VIII IX X XI XII".split()[n - 1] if n <= 12 else str(n)
 
 T = load_target()
 RA, DEC = T["ra"], T["dec"]
@@ -36,11 +41,8 @@ target.wcs.crval = [RA, DEC]
 target.wcs.crpix = [(N + 1) / 2, (N + 1) / 2]
 target.wcs.cdelt = [-PIX_ARCSEC / 3600, PIX_ARCSEC / 3600]
 
-# Group into passes by date gap.
-cutouts.sort(key=lambda c: c["mjd"])
-passes = [[cutouts[0]]]
-for c in cutouts[1:]:
-    (passes[-1].append(c) if c["mjd"] - passes[-1][-1]["mjd"] < PASS_GAP_DAYS else passes.append([c]))
+# Group into passes by date gap, rejoining visits split between detector pairs (passes.py).
+passes = group_passes(cutouts, BANDS)
 
 
 def load(c):
@@ -110,16 +112,13 @@ for b in BANDS:
     limits[b] = (np.percentile(allpix, 5), np.percentile(allpix, HI_PCT))
 
 # Short visits (a day or so, few images) get their own label instead of a pass number.
-def is_short(group):
-    return len(group) < 20 or group[-1]["mjd"] - group[0]["mjd"] < 3
-
 labels, n = [], 0
 for group in passes:
     if is_short(group):
         labels.append("Short visit")
     else:
         n += 1
-        labels.append(f"Pass {['I', 'II', 'III', 'IV', 'V', 'VI'][n - 1]}")
+        labels.append(f"Pass {roman(n)}")
 
 meta = {"target": T, "request_size_deg": REQUEST_SIZE,
         "grid": {"pixels": N, "arcsec_per_pixel": PIX_ARCSEC, "field_deg": SIZE}, "passes": []}
@@ -151,9 +150,13 @@ for pi, group in enumerate(passes):
         },
     })
 
-# Differences between consecutive passes (D3 band): anything that moved shows as +/- pairs.
+# Differences between consecutive passes (D3, or another band both have): anything that
+# moved shows as +/- pairs. Passes with no band in common get no difference image.
+DIFF_ORDER = ["SPHEREx-D3", "SPHEREx-D6", "SPHEREx-D1"]
 for pi in range(1, len(passes)):
-    b = "SPHEREx-D3"
+    b = next((b for b in DIFF_ORDER if (pi, b) in combined and (pi - 1, b) in combined), None)
+    if b is None:
+        continue
     d = stretch(combined[(pi, b)], *limits[b]) - stretch(combined[(pi - 1, b)], *limits[b])
     d = np.nan_to_num(d)
     rgb = np.zeros((N, N, 3))

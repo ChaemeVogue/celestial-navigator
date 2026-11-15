@@ -16,8 +16,10 @@ const withArticle = (phrase: string) => `${/^[aeiou]/i.test(phrase) ? 'an' : 'a'
 // "Pass II" -> "pass II" (keeps the numeral), "Short visit" -> "short visit"
 const lowerFirst = (label: string) => label.charAt(0).toLowerCase() + label.slice(1)
 
-// "the Pinwheel Galaxy", but not "the Barnard’s Star": possessive names take no article
-const withThe = (name: string) => (/['’]s\b/.test(name) ? name : `the ${name}`)
+// "the Pinwheel Galaxy", "the Pleiades", but plain "Barnard’s Star" or "R Draconis":
+// only galaxies, nebulae, clusters and the two plural names take an article
+const withThe = (name: string) =>
+  /(Galaxy|Nebula|Cluster)$|^(Pleiades|Pillars)/.test(name) ? `the ${name}` : name
 
 export default function PlateCaption({ target, passesData, passIndex, colourKey, band }: Props) {
   const pass = passesData?.passes[passIndex]

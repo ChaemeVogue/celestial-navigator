@@ -39,8 +39,29 @@ M1 and M16. Preview report: https://claude.ai/artifact/2TJEFE59zmsWqwEuHHUH75
   the star saturates into a flat disc, so its centre can't be measured there.
 - Fast movers must be cut out at today's position: its J2000 catalogue position is 4.5′ off.
 
+## The challenge's test targets (15 Nov 2026)
+
+All five are processed from Data Release 1 (IRSA's TAP service was down, so via SIA), each
+centred on its 2026 position. Measured from unstretched per-pass medians:
+
+| Target         | Result                                                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Barnard's Star | moved 6″ north in 0.57 yr (Gaia: 5.9″); saturated in D1/D3                                                                                      |
+| Epsilon Indi B | moved 3.4″ east, 2.1″ south in 0.97 yr (expected 3.9″, 2.4″); amber in colour because it's cool; glare from ε Ind A (7′ away) crosses the field |
+| WISE 0855      | detected only in D6 (S/N ≈ 35), too faint to see by eye in our stretch; moved 6.9″ west, 0.9″ north in 0.98 yr (expected 8.0″, 0.7″)            |
+| RW Aurigae     | about a third brighter in D3 and a quarter fainter in D6 between Sep 2025 and Feb 2026                                                          |
+| R Draconis     | core saturated; the glow around it doubled in D6 in the second pass, then fell back: a rough sign of its pulsation                              |
+
+Lessons: faint, cold objects need D6 and a stretch tuned for them; saturated variables need
+brightness measured from the wings, not the core; and the colour image can hide what one
+band shows clearly.
+
 ## Processing lessons
 
+- **Detectors work in pairs** (D1+D4, D2+D5, D3+D6): each pair sees the same sky at the
+  same moment, so D3 and D6 are taken together but D1 at a different time. Near the ecliptic
+  poles one pair can cross a target weeks before another, splitting a pass (R Draconis);
+  `passes.py` rejoins neighbouring visits that are complete only together.
 - **Request 0.15°, show 0.1°.** The camera's orientation changes by up to half a turn
   between passes. A 0.1° cutout rotated north-up leaves empty corners; a 0.15° one
   cropped after reprojecting fills the frame.

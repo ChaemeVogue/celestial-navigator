@@ -1,5 +1,45 @@
 [
   {
+    "id": "barnard",
+    "messier": "GJ 699",
+    "name": "Barnard’s Star",
+    "kind": "nearby red dwarf, the fastest-moving star in our sky",
+    "ra": 269.44626,
+    "dec": 4.76835
+  },
+  {
+    "id": "epsindib",
+    "messier": "ε Ind B",
+    "name": "Epsilon Indi B",
+    "kind": "pair of brown dwarfs orbiting a nearby star",
+    "ra": 331.09668,
+    "dec": -56.80065
+  },
+  {
+    "id": "wise0855",
+    "messier": "WISE 0855−0714",
+    "name": "WISE 0855",
+    "kind": "very cold brown dwarf that crosses the sky fast",
+    "ra": 133.75977,
+    "dec": -7.24218
+  },
+  {
+    "id": "rwaur",
+    "messier": "RW Aur",
+    "name": "RW Aurigae",
+    "kind": "young star whose brightness changes",
+    "ra": 76.95659,
+    "dec": 30.40129
+  },
+  {
+    "id": "rdra",
+    "messier": "R Dra",
+    "name": "R Draconis",
+    "kind": "pulsating giant that brightens and fades over months",
+    "ra": 248.16723,
+    "dec": 66.75502
+  },
+  {
     "id": "m101",
     "messier": "M101",
     "name": "Pinwheel Galaxy",
@@ -38,14 +78,6 @@
     "kind": "dust pillar in the Eagle Nebula",
     "ra": 274.7125,
     "dec": -13.835
-  },
-  {
-    "id": "barnard",
-    "messier": "GJ 699",
-    "name": "Barnard’s Star",
-    "kind": "nearby red dwarf, the fastest-moving star in our sky",
-    "ra": 269.44626,
-    "dec": 4.76835
   },
   {
     "id": "m31",
