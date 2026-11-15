@@ -1,4 +1,4 @@
-import type { ColourKeyEntry, PassesResponse, Target } from '../api/types'
+import type { ColourKeyEntry, Pass, PassesResponse, Target } from '../api/types'
 import { formatDec, formatRA } from '../utils/coords'
 import './PlateCaption.css'
 
@@ -8,6 +8,7 @@ type Props = {
   passIndex: number
   colourKey: ColourKeyEntry[]
   band: ColourKeyEntry | null // null = colour composite
+  difference?: { from: Pass; to: Pass; band: string } | null // set in the Difference view
 }
 
 // "a face-on spiral galaxy", "an open star cluster"
@@ -21,7 +22,14 @@ const lowerFirst = (label: string) => label.charAt(0).toLowerCase() + label.slic
 const withThe = (name: string) =>
   /(Galaxy|Nebula|Cluster)$|^(Pleiades|Pillars)/.test(name) ? `the ${name}` : name
 
-export default function PlateCaption({ target, passesData, passIndex, colourKey, band }: Props) {
+export default function PlateCaption({
+  target,
+  passesData,
+  passIndex,
+  colourKey,
+  band,
+  difference = null,
+}: Props) {
   const pass = passesData?.passes[passIndex]
 
   if (!target || !passesData || !pass) {
@@ -29,6 +37,28 @@ export default function PlateCaption({ target, passesData, passIndex, colourKey,
       <div className="plate-caption plate-caption--empty" aria-hidden="true">
         <p className="plate-caption__text">&nbsp;</p>
         <p className="plate-caption__data">&nbsp;</p>
+      </div>
+    )
+  }
+
+  if (difference) {
+    const { from, to } = difference
+    return (
+      <div className="plate-caption">
+        <p className="plate-caption__text">
+          Difference plate: {to.label} minus {from.label}, seen by detector {difference.band}.
+          Everything that looks the same in both passes cancels out to black. Amber marks where
+          something was in the earlier pass, blue where it is in the later one.
+        </p>
+        <p className="plate-caption__data">
+          <span>RA {formatRA(target.ra)}</span>
+          <span>DEC {formatDec(target.dec)}</span>
+          <span>
+            DATES {from.date.slice(0, 10)} → {to.date.slice(0, 10)}
+          </span>
+          <span>FIELD {passesData.fieldSizeDeg}°</span>
+          <span>BAND {difference.band}</span>
+        </p>
       </div>
     )
   }

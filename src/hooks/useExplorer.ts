@@ -1,9 +1,29 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getColourKey, getPasses, getTargets } from '../api/client'
-import type { ColourKeyEntry, PassesResponse, Target } from '../api/types'
+import type { ColourKeyEntry, Pass, PassesResponse, Target } from '../api/types'
 import { angularSeparation } from '../utils/sky'
 
 export type LoadStatus = 'loading' | 'ready' | 'error'
+
+// Blink = the plates themselves; Difference = a later pass minus an earlier one
+export type PlateView = 'blink' | 'difference'
+
+// The difference plate on screen: two passes (indexes, earlier first) and one detector
+export type Comparison = { from: number; to: number; band: string }
+
+// What the Difference view starts on: the first and last full passes (short visits are
+// noisy), in the first detector both have, preferring D3 (the cleanest for most stars).
+export function defaultComparison(passes: Pass[]): Comparison | null {
+  const full = passes.map((p, i) => ({ p, i })).filter(({ p }) => !p.short)
+  const pool = full.length >= 2 ? full : passes.map((p, i) => ({ p, i }))
+  if (pool.length < 2) return null
+  const first = pool[0]
+  const last = pool[pool.length - 1]
+  const band = ['D3', 'D6', 'D1'].find(
+    (b) => first.p.bandImageUrls?.[b] && last.p.bandImageUrls?.[b],
+  )
+  return band ? { from: first.i, to: last.i, band } : null
+}
 
 const PLAY_INTERVAL_MS = 800
 // Typed coordinates this close to a target open that target (the field is 0.1° wide;
@@ -40,6 +60,9 @@ export function useExplorer() {
   const [customSpot, setCustomSpot] = useState<SkySpot | null>(null)
   // null = colour composite; otherwise a detector id ("D6"). Kept across target changes.
   const [band, setBand] = useState<string | null>(null)
+  const [view, setViewState] = useState<PlateView>('blink')
+  // null = the default for the target (defaultComparison); set by the Show button
+  const [comparison, setComparison] = useState<Comparison | null>(null)
 
   const selectedTarget = targets.find((t) => t.id === selectedId) ?? null
   const passCount = passesData?.passes.length ?? 0
@@ -106,6 +129,7 @@ export function useExplorer() {
     setCustomSpot(null)
     setIsPlaying(false)
     setPassIndexState(0)
+    setComparison(null)
     setPassesData(null)
     setPassesStatus('loading')
     setSelectedId(id)
@@ -137,6 +161,11 @@ export function useExplorer() {
   )
   const next = useCallback(() => setPassIndex(passIndex + 1), [setPassIndex, passIndex])
   const prev = useCallback(() => setPassIndex(passIndex - 1), [setPassIndex, passIndex])
+
+  const setView = useCallback((v: PlateView) => {
+    setIsPlaying(false)
+    setViewState(v)
+  }, [])
 
   const play = useCallback(() => setIsPlaying(true), [])
   const pause = useCallback(() => setIsPlaying(false), [])
@@ -173,6 +202,10 @@ export function useExplorer() {
     colourKey,
     band,
     setBand,
+    view,
+    setView,
+    comparison,
+    setComparison,
   }
 }
 

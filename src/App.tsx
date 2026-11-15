@@ -6,10 +6,13 @@ import SkyPlate from './components/SkyPlate'
 import PlateCaption from './components/PlateCaption'
 import TimelinePanel from './components/TimelinePanel'
 import ColourKeyPanel from './components/ColourKeyPanel'
+import DifferencePanel from './components/DifferencePanel'
+import ViewSwitch from './components/ViewSwitch'
 import ObservationLog from './components/ObservationLog'
 import StorySection from './components/StorySection'
 import UnchartedSpot from './components/UnchartedSpot'
-import { nearestTarget, useExplorer } from './hooks/useExplorer'
+import { defaultComparison, nearestTarget, useExplorer } from './hooks/useExplorer'
+import { useDifferenceImage } from './hooks/useDifferenceImage'
 import { usePreloadImages } from './hooks/usePreloadImages'
 import { useUrlState } from './hooks/useUrlState'
 import { hasBandImages, imageForBand } from './utils/bands'
@@ -28,6 +31,18 @@ export default function App() {
   const band = bandsAvailable
     ? (explorer.colourKey.find((c) => c.band === explorer.band) ?? null)
     : null
+  // The Difference view needs single-detector images; simulated targets stay on Blink.
+  const comparison = explorer.comparison ?? (bandsAvailable ? defaultComparison(passes) : null)
+  const showDifference = explorer.view === 'difference' && comparison !== null
+  const [earlier, later] = comparison ? [passes[comparison.from], passes[comparison.to]] : []
+  const differenceImage = useDifferenceImage(
+    showDifference && comparison ? (earlier?.bandImageUrls?.[comparison.band] ?? null) : null,
+    showDifference && comparison ? (later?.bandImageUrls?.[comparison.band] ?? null) : null,
+  )
+  const difference =
+    showDifference && comparison && earlier && later
+      ? { from: earlier, to: later, band: comparison.band }
+      : null
   const framesReady = usePreloadImages(
     passes.map((p) => imageForBand(p, band?.band ?? null)).filter((url) => url !== null),
   )
@@ -74,12 +89,28 @@ export default function App() {
             />
             <div className="main-row">
               <div className="plate-column">
+                {explorer.passesStatus === 'ready' && (
+                  <ViewSwitch
+                    view={showDifference ? 'difference' : 'blink'}
+                    canShowDifference={comparison !== null}
+                    onChange={explorer.setView}
+                  />
+                )}
                 <SkyPlate
                   target={selected}
                   passesData={explorer.passesData}
                   passesStatus={explorer.passesStatus}
                   passIndex={explorer.passIndex}
                   band={band}
+                  difference={
+                    difference && differenceImage
+                      ? {
+                          image: differenceImage,
+                          label: `${difference.from.label} → ${difference.to.label}`,
+                          band: difference.band,
+                        }
+                      : null
+                  }
                   onRetry={explorer.retryPasses}
                 />
                 <PlateCaption
@@ -88,25 +119,38 @@ export default function App() {
                   passIndex={explorer.passIndex}
                   colourKey={explorer.colourKey}
                   band={band}
+                  difference={difference}
                 />
               </div>
               <aside className="side-column" aria-label="Timeframes and colour key">
-                <TimelinePanel
-                  passes={passes}
-                  passIndex={explorer.passIndex}
-                  isPlaying={explorer.isPlaying}
-                  canPlay={framesReady}
-                  onSelectPass={explorer.setPassIndex}
-                  onPrev={explorer.prev}
-                  onNext={explorer.next}
-                  onTogglePlay={explorer.togglePlay}
-                />
-                <ColourKeyPanel
-                  entries={explorer.colourKey}
-                  band={band?.band ?? null}
-                  bandsAvailable={bandsAvailable}
-                  onBandChange={explorer.setBand}
-                />
+                {showDifference && comparison ? (
+                  <DifferencePanel
+                    key={selected.id}
+                    passes={passes}
+                    bands={explorer.colourKey.map((c) => c.band)}
+                    comparison={comparison}
+                    onShow={explorer.setComparison}
+                  />
+                ) : (
+                  <>
+                    <TimelinePanel
+                      passes={passes}
+                      passIndex={explorer.passIndex}
+                      isPlaying={explorer.isPlaying}
+                      canPlay={framesReady}
+                      onSelectPass={explorer.setPassIndex}
+                      onPrev={explorer.prev}
+                      onNext={explorer.next}
+                      onTogglePlay={explorer.togglePlay}
+                    />
+                    <ColourKeyPanel
+                      entries={explorer.colourKey}
+                      band={band?.band ?? null}
+                      bandsAvailable={bandsAvailable}
+                      onBandChange={explorer.setBand}
+                    />
+                  </>
+                )}
               </aside>
             </div>
             <ObservationLog target={selected} passesData={explorer.passesData} />

@@ -1,4 +1,5 @@
 import type { ColourKeyEntry, PassesResponse, Target } from '../api/types'
+import type { DifferenceImage } from '../hooks/useDifferenceImage'
 import type { LoadStatus } from '../hooks/useExplorer'
 import { imageForBand } from '../utils/bands'
 import { formatDate } from '../utils/dates'
@@ -10,6 +11,8 @@ type Props = {
   passesStatus: LoadStatus
   passIndex: number
   band: ColourKeyEntry | null // null = colour composite
+  // Set in the Difference view: shown instead of the pass. label: "Pass I → Pass III"
+  difference?: { image: DifferenceImage; label: string; band: string } | null
   onRetry: () => void
 }
 
@@ -30,6 +33,7 @@ export default function SkyPlate({
   passesStatus,
   passIndex,
   band,
+  difference = null,
   onRetry,
 }: Props) {
   const pass = passesData?.passes[passIndex]
@@ -60,20 +64,29 @@ export default function SkyPlate({
   } else {
     // 1 arcminute as a share of the field width
     const scaleWidth = (1 / 60 / passesData.fieldSizeDeg) * 100
-    const src = imageForBand(pass, band?.band ?? null)
+    const src = difference
+      ? difference.image.status === 'ready'
+        ? difference.image.url
+        : null
+      : imageForBand(pass, band?.band ?? null)
     const bandText = band ? `, detector ${band.band} only (${band.wavelength})` : ''
+    const alt = difference
+      ? `Difference plate for ${target.name}: ${difference.label}, detector ${difference.band}`
+      : `${target.name}, ${pass.label} (${passIndex + 1} of ${total})${bandText}, observed ${formatDate(pass.date)}`
 
     content = (
       <>
         {src ? (
-          <img
-            className="sky-plate__image"
-            src={src}
-            alt={`${target.name}, ${pass.label} (${passIndex + 1} of ${total})${bandText}, observed ${formatDate(pass.date)}`}
-          />
+          <img className="sky-plate__image" src={src} alt={alt} />
         ) : (
-          <div className="sky-plate__message">
-            <p>No {band?.band} images in this visit.</p>
+          <div className="sky-plate__message" role="status">
+            <p>
+              {!difference
+                ? `No ${band?.band} images in this visit.`
+                : difference.image.status === 'error'
+                  ? 'The difference plate couldn’t be made.'
+                  : 'Subtracting…'}
+            </p>
           </div>
         )}
 
@@ -86,8 +99,14 @@ export default function SkyPlate({
         </span>
         <span className="sky-plate__badge" aria-hidden="true">
           {/* labels can be "Short visit", so show position separately */}
-          {pass.label} · {passIndex + 1} of {total}
-          {band && ` · ${band.band}`}
+          {difference ? (
+            `Difference · ${difference.label} · ${difference.band}`
+          ) : (
+            <>
+              {pass.label} · {passIndex + 1} of {total}
+              {band && ` · ${band.band}`}
+            </>
+          )}
         </span>
         {passesData.simulated && (
           <span className="sky-plate__simulated" aria-hidden="true">
@@ -99,22 +118,23 @@ export default function SkyPlate({
           1′
         </span>
 
-        {passesData.candidates.map((c) => {
-          const pos = c.positions.find((p) => p.passId === pass.id)
-          if (!pos) return null
-          return (
-            <div
-              key={c.id}
-              className="sky-plate__marker"
-              style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-              role="img"
-              aria-label={`Candidate mover ${c.id}, ${c.status}`}
-            >
-              <span className="sky-plate__marker-ring" />
-              <span className="sky-plate__marker-label">{c.id}</span>
-            </div>
-          )
-        })}
+        {!difference &&
+          passesData.candidates.map((c) => {
+            const pos = c.positions.find((p) => p.passId === pass.id)
+            if (!pos) return null
+            return (
+              <div
+                key={c.id}
+                className="sky-plate__marker"
+                style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                role="img"
+                aria-label={`Candidate mover ${c.id}, ${c.status}`}
+              >
+                <span className="sky-plate__marker-ring" />
+                <span className="sky-plate__marker-label">{c.id}</span>
+              </div>
+            )
+          })}
       </>
     )
   }
