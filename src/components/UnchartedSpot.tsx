@@ -110,10 +110,18 @@ function FetchControls({
 function BackendOffline({ onRetry }: { onRetry?: () => void }) {
   return (
     <div className="uncharted__problem" role="alert">
-      <p>
-        The Celestial Navigator backend isn’t running, so new spots can’t be fetched. To start it,
-        run <code>pipeline/.venv/bin/python pipeline/server.py</code> in the project folder.
-      </p>
+      {import.meta.env.DEV ? (
+        // On your own machine (npm run dev): say how to start it
+        <p>
+          The Celestial Navigator backend isn’t running, so new spots can’t be fetched. To start it,
+          run <code>pipeline/.venv/bin/python pipeline/server.py</code> in the project folder.
+        </p>
+      ) : (
+        <p>
+          Fetching new spots needs Celestial Navigator’s backend, which isn’t connected to this
+          site. Every charted target works without it: pick one from the sky chart.
+        </p>
+      )}
       {onRetry && (
         <button type="button" className="uncharted__go" onClick={onRetry}>
           Try again
@@ -127,20 +135,37 @@ function ScoutReport({
   scout,
   fetch,
   onFetch,
+  onRetryScout,
 }: {
   scout: SpotScout
   fetch: SpotFetchState
   onFetch: (retry?: boolean) => void
+  onRetryScout: () => void
 }) {
   if (scout.images === 0) {
     const others = otherDetectors(scout)
     const total = Object.values(scout.imagesByDetector).reduce((a, b) => a + b, 0)
+    if (others.length) {
+      return (
+        <p className="uncharted__text">
+          SPHEREx has photographed this spot {plural(total, 'time')}, but only with its{' '}
+          {others.join(' and ')} detectors. Celestial Navigator blinks D1, D3 and D6, which haven’t
+          covered it in a released image yet. This happens near the north ecliptic pole; try a spot
+          a few degrees away.
+        </p>
+      )
+    }
+    // SPHEREx covers the whole sky, so an empty list is most likely a hiccup at IRSA.
     return (
-      <p className="uncharted__text">
-        {others.length
-          ? `SPHEREx has photographed this spot ${plural(total, 'time')}, but only with its ${others.join(' and ')} detectors. Celestial Navigator blinks D1, D3 and D6, which haven’t covered it in a released image yet. This happens near the north ecliptic pole; try a spot a few degrees away.`
-          : 'SPHEREx hasn’t released any images of this spot yet. Try another spot.'}
-      </p>
+      <div className="uncharted__problem" role="alert">
+        <p>
+          NASA’s archive didn’t list any SPHEREx photos for this spot. SPHEREx covers the whole sky,
+          so this is probably a hiccup at the archive. Try again in a few minutes.
+        </p>
+        <button type="button" className="uncharted__go" onClick={onRetryScout}>
+          Try again
+        </button>
+      </div>
     )
   }
   return (
@@ -258,7 +283,12 @@ export default function UnchartedSpot({
         <FetchControls fetch={fetch} onFetch={onFetch} />
       )}
       {scout.status === 'ready' && (
-        <ScoutReport scout={scout.scout} fetch={fetch} onFetch={onFetch} />
+        <ScoutReport
+          scout={scout.scout}
+          fetch={fetch}
+          onFetch={onFetch}
+          onRetryScout={onRetryScout}
+        />
       )}
 
       {nearest && (

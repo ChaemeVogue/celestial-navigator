@@ -81,6 +81,13 @@ def paths(tid):
     }
 
 
+def write_json(path, data):
+    """Write in one go (temporary file, then rename), so nothing ever reads half a file."""
+    with open(path + ".part", "w") as f:
+        json.dump(data, f, indent=1)
+    os.replace(path + ".part", path)
+
+
 def read_log(tid, start=0):
     try:
         with open(paths(tid)["log"], encoding="utf-8", errors="replace") as f:
@@ -179,11 +186,11 @@ def run_job(tid):
             else:
                 message = "Something went wrong while processing this spot."
             permanent = code != "timeout" and "@@permanent" in output
-            json.dump({"message": message, "permanent": permanent, "at": time.time(),
-                       "log": os.path.relpath(p["log"], REPO)}, open(p["failed"], "w"), indent=1)
+            write_json(p["failed"], {"message": message, "permanent": permanent,
+                                     "at": time.time(), "log": os.path.relpath(p["log"], REPO)})
     except Exception as e:  # never leave a spot stuck as "processing"
-        json.dump({"message": "Something went wrong while processing this spot.",
-                   "detail": repr(e), "at": time.time()}, open(p["failed"], "w"), indent=1)
+        write_json(p["failed"], {"message": "Something went wrong while processing this spot.",
+                                 "detail": repr(e), "at": time.time()})
     finally:
         with lock:
             jobs.pop(tid, None)
@@ -216,11 +223,15 @@ def get_scout(tid, ra, dec):
     else:
         scout = scout_module()
         images = scout.sia_images(ra, dec)
+        summary = scout.summarize(ra, dec, max_per_band=SPOT_MAX_PER_BAND, images=images)
+        if not images:
+            # SPHEREx covers the whole sky, so an empty answer is most likely one of IRSA's
+            # wobbles: show it, but don't save it, so the next visit asks again.
+            return summary
         os.makedirs(os.path.dirname(path), exist_ok=True)
         # Saved for query.py, so fetching this spot needn't ask IRSA (which flaps) again
-        json.dump(images, open(os.path.join(os.path.dirname(path), "sia.json"), "w"))
-        summary = scout.summarize(ra, dec, max_per_band=SPOT_MAX_PER_BAND, images=images)
-        json.dump(summary, open(path, "w"), indent=1)
+        write_json(os.path.join(os.path.dirname(path), "sia.json"), images)
+        write_json(path, summary)
     with lock:
         scouts[tid] = summary
     return summary

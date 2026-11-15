@@ -81,13 +81,14 @@ def from_sia():
 
 print("@@stage query", flush=True)
 try:
-    if is_spot(T) and os.path.exists("sia.json"):  # server.py's scout already asked IRSA
+    listing = json.load(open("sia.json")) if is_spot(T) and os.path.exists("sia.json") else []
+    if listing:  # server.py's scout already asked IRSA (it never saves an empty answer)
         rows = sorted(
             ({"band": im["band"], "uri": im["url"] + CUTOUT, "mjd": im["mjd"]}
-             for im in json.load(open("sia.json")) if im["band"] in BANDS),
+             for im in listing if im["band"] in BANDS),
             key=lambda r: (r["band"], r["mjd"]),
         )
-        OTHER_BANDS[:] = sorted({im["band"] for im in json.load(open("sia.json"))} - set(BANDS))
+        OTHER_BANDS[:] = sorted({im["band"] for im in listing} - set(BANDS))
         print(f"using the image list saved by the scout: {len(rows)} images", flush=True)
     elif os.environ.get("SKIP_TAP"):  # set when TAP is known to be down, to skip its long timeout
         raise RuntimeError("SKIP_TAP is set")
@@ -104,14 +105,18 @@ except Exception as e:  # IRSA's TAP service has gone down for hours at a time (
         sys.exit(1)
 
 if not rows:
-    print("@@permanent", flush=True)  # trying again won't help (server.py hides the retry)
     if OTHER_BANDS:
+        # IRSA answered with images, just none in our detectors: trying again won't help
+        # (server.py hides the retry). An empty answer may be a wobble, so it isn't final.
+        print("@@permanent", flush=True)
         names = " and ".join(b.replace("SPHEREx-", "") for b in OTHER_BANDS)
         print(f"!! SPHEREx has photographed this spot, but only with detectors {names}. "
               "Celestial Navigator blinks D1, D3 and D6, which haven't covered it in a released "
               "image yet (this happens near the north ecliptic pole).", flush=True)
     else:
-        print("!! SPHEREx has no released images of this spot yet.", flush=True)
+        print("!! NASA's archive (IRSA) didn't list any SPHEREx images for this spot. SPHEREx "
+              "covers the whole sky, so this is probably a hiccup at IRSA. Try again in a few "
+              "minutes.", flush=True)
     sys.exit(1)
 
 if is_spot(T):
