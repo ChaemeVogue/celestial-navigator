@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { Target } from '../api/types'
 import {
   eclipticLatitude,
@@ -124,6 +124,9 @@ function Flourish({ className }: { className: string }) {
 }
 
 export default function SkyChart({ targets, selectedTarget, bodies, footer, onSelect }: Props) {
+  // The planet under the pointer. Its name tag is drawn on a layer above the targets, so a
+  // nearby target star can't cover it (the planet itself stays beneath the targets).
+  const [hoveredBody, setHoveredBody] = useState<BodyId | null>(null)
   const placed = targets.map((t) => ({ target: t, ...toPercent(t.ra, t.dec) }))
   const placedBodies = bodies
     .map((b) => ({ body: b, ...toPercent(b.ra, b.dec) }))
@@ -251,19 +254,17 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
             // Known issue (to fix later): when two planets overlap (a conjunction, e.g. Mars
             // in front of Jupiter), hovering the big one enlarges it over the small one, and
             // the small one is hard to point at.
-            const side = left > 80 ? 'left' : 'right'
             return (
               <span
                 key={body.id}
-                className={`sky-chart__body sky-chart__body--label-${side}`}
+                className="sky-chart__body"
                 style={{ left: `${left}%`, top: `${top}%` }}
                 role="img"
                 aria-label={body.name}
+                onMouseEnter={() => setHoveredBody(body.id)}
+                onMouseLeave={() => setHoveredBody((h) => (h === body.id ? null : h))}
               >
                 <PlanetIcon id={body.id} />
-                <span className="sky-chart__body-name" aria-hidden="true">
-                  {body.name}
-                </span>
               </span>
             )
           })}
@@ -293,6 +294,20 @@ export default function SkyChart({ targets, selectedTarget, bodies, footer, onSe
             )
           })}
         </div>
+
+        {/* Name tag for the hovered planet, above everything; near the right edge it opens left */}
+        {placedBodies
+          .filter(({ body }) => body.id === hoveredBody)
+          .map(({ body, left, top }) => (
+            <div key={body.id} className="sky-chart__tips" aria-hidden="true">
+              <span
+                className={`sky-chart__body-name${left > 80 ? ' sky-chart__body-name--left' : ''}`}
+                style={{ left: `${left}%`, top: `${top}%` }}
+              >
+                {body.name}
+              </span>
+            </div>
+          ))}
       </div>
 
       <figcaption className="sky-chart__caption">

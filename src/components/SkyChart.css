@@ -7,6 +7,7 @@
 .sky-chart__map {
   position: relative;
   aspect-ratio: 232 / 126;
+  --planet-size: clamp(30px, 4.5cqw, 46px);
 }
 
 /* Thin plate border joining the corner flourishes, like an engraved chart's neat line */
@@ -193,7 +194,7 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: clamp(30px, 4.5cqw, 46px);
+  width: var(--planet-size);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   pointer-events: none; /* only the drawn planet reacts, not the empty square around it */
@@ -224,10 +225,17 @@
   position: absolute;
 }
 
-.sky-chart__body-name {
-  display: none;
+.sky-chart__tips {
   position: absolute;
-  left: calc(100% + 8px);
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Sits beside the planet: half the (hovered, 1.4x) icon plus a small gap */
+.sky-chart__body-name {
+  position: absolute;
+  transform: translate(calc(var(--planet-size) * 0.7 + 6px), -50%);
   padding: 3px 8px 4px;
   background: rgba(6, 10, 20, 0.9);
   border: 1px solid var(--border-faint);
@@ -236,16 +244,10 @@
   line-height: 1.2;
   color: var(--text);
   white-space: nowrap;
-  pointer-events: none;
 }
 
-.sky-chart__body--label-left .sky-chart__body-name {
-  right: calc(100% + 8px);
-  left: auto;
-}
-
-.sky-chart__body:hover .sky-chart__body-name {
-  display: block;
+.sky-chart__body-name--left {
+  transform: translate(calc(-100% - var(--planet-size) * 0.7 - 6px), -50%);
 }
 
 /* ---------- Targets: the brightest stars on the chart ---------- */
