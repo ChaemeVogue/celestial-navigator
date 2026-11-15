@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import type { Explorer } from './useExplorer'
 
 // Keeps the address bar in step with what's on screen, so a view can be shared or embedded:
-//   ?target=barnard            a processed target
+//   ?target=m45                a processed target
 //   ?ra=133.79513&dec=-7.24515 any spot (degrees), opened like typed coordinates
 // The URL is read once, when the targets have loaded, then rewritten on every change.
 // Returns a function that says (once) whether the current selection came from the URL, so

@@ -33,7 +33,7 @@ The saved working version is tagged **`v0.1-mvp`**. Try new ideas on a branch (s
 - **Enter coordinates** on the dome, in degrees (`269.446 +4.768`) or hours/degrees
   (`08h55m10.831s -7d14m42.53s`). Within 0.1° of a target opens it; anywhere else is
   marked on the chart as an uncharted spot until the backend can process it.
-- **Share a view.** The address bar follows what's on screen: `?target=barnard` or
+- **Share a view.** The address bar follows what's on screen: `?target=m45` or
   `?ra=133.79513&dec=-7.24515`. Opening such a link goes straight to the plate.
 - **Watch the planets.** The Sun, Moon and planets sit on the chart for any date since
   launch; press Play to see them move along the ecliptic.
