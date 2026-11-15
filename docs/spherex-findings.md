@@ -30,6 +30,15 @@ M1 and M16. Preview report: https://claude.ai/artifact/2TJEFE59zmsWqwEuHHUH75
 - **IRSA is slow and flaky.** The query takes 10–90 s per detector, and 5–15 of ~170
   downloads fail with HTTP 503 on each run. Retrying a minute later fetches them.
 
+## Barnard's Star: a real mover
+
+- Processed from IRSA's image search (SIA) while the TAP query service was down, so it
+  has only the Data Release 1 passes: August 2025 and March 2026.
+- **It visibly moves.** Its centroid shifts about **6″ north** between the passes (≈2 pixels
+  in our 3.1″ grid), measured in the colour and D6 images; Gaia predicts 5.9″. In D1 and D3
+  the star saturates into a flat disc, so its centre can't be measured there.
+- Fast movers must be cut out at today's position: its J2000 catalogue position is 4.5′ off.
+
 ## Processing lessons
 
 - **Request 0.15°, show 0.1°.** The camera's orientation changes by up to half a turn
@@ -43,7 +52,8 @@ M1 and M16. Preview report: https://claude.ai/artifact/2TJEFE59zmsWqwEuHHUH75
 - **Bright, frame-filling targets need a gentler stretch.** The Crab washed out to white
   with the default; `config.STRETCH` holds per-target overrides.
 - **Saturated stars leave holes.** Their cores are flagged in every exposure, so the
-  median is empty. We fill enclosed holes from the brightest neighbouring pixel.
+  median is empty. We fill each enclosed hole with one flat value (the brightest pixel on
+  its rim); growing inward from the edges left dark X-shaped seams in big cores.
 - **Flip vertically** when writing PNGs (FITS rows run bottom to top).
 - **Images are small:** 116 px across after reprojecting at 3.1″ per pixel (SPHEREx's
   own pixels are ~6.2″). They look soft when scaled up; that is the real resolution.

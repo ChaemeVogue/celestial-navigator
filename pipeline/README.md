@@ -31,6 +31,10 @@ a time with the same argument:
 | `process.py`  | groups passes, reprojects, combines, stretches | `out/` PNGs and `meta.json`                                 |
 | `to_app.py`   | copies colour PNGs into the app                | `public/mock/images/<id>/`, `src/api/mock/passes/<id>.json` |
 
+If IRSA's query (TAP) service is down, `query.py` falls back to its image-search (SIA)
+service automatically. SIA only lists Data Release 1 images, so a target may get fewer
+passes than with TAP; rerun later to pick up the newer quick-release passes.
+
 `run.py` reruns `download.py` until every file is fetched, since IRSA refuses a few
 requests (HTTP 503) on most runs. Files already downloaded are skipped.
 

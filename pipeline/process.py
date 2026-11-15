@@ -66,17 +66,16 @@ def stretch(arr, lo, hi):
 
 def fill_holes(arr):
     """Saturated star cores are flagged in every exposure and leave enclosed NaN holes.
-    Fill only those (not the empty edges) with the brightest neighbouring value."""
+    Fill only those (not the empty edges), each with one flat value: the brightest pixel on
+    its rim. Growing inward from the edges instead leaves dark X-shaped seams in big cores."""
     finite = np.isfinite(arr)
-    holes = ndimage.binary_fill_holes(finite) & ~finite
+    labels, n = ndimage.label(ndimage.binary_fill_holes(finite) & ~finite)
     out = arr.copy()
-    for _ in range(10):
-        if not holes.any():
-            break
-        grown = ndimage.grey_dilation(np.where(np.isfinite(out), out, -np.inf), size=3)
-        fill = holes & np.isfinite(grown)
-        out[fill] = grown[fill]
-        holes &= ~fill
+    for i in range(1, n + 1):
+        hole = labels == i
+        rim = ndimage.binary_dilation(hole) & ~hole & finite
+        if rim.any():
+            out[hole] = arr[rim].max()
     return out
 
 
