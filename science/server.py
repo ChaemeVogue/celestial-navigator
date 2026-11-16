@@ -257,6 +257,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(404); return
             params = parse_qs(request.query)
             target = params.get('target', [''])[0]
+            if 'ra' in params and 'dec' in params:
+                # Added for Celestial Navigator's uncharted spots: any position, by ra/dec in
+                # degrees, named like the on-demand backend's spots (spot_<ra>_<dec>, 0.0001°).
+                ra, dec = float(params['ra'][0]), float(params['dec'][0])
+                if not (np.isfinite(ra) and np.isfinite(dec) and 0 <= ra < 360 and -90 <= dec <= 90):
+                    raise ValueError('ra must be 0–360 and dec −90–90 degrees')
+                ra, dec = round(ra, 4) % 360, round(dec, 4) + 0.0
+                target = f'spot_{ra:.4f}_{dec:.4f}'
+                with LOCK:
+                    TARGETS.setdefault(target, dict(id=target, name=target, ra=ra, dec=dec))
             if target not in TARGETS:
                 raise ValueError('Choose a catalogued target')
             z = round(float(params.get('z', ['0'])[0]), 5)

@@ -11,14 +11,22 @@ export type SpectralMap =
 const POLL_MS = 1000
 const ready = new Map<string, string>() // target id → image, so coming back is instant
 
-// The "All light" map for a target: the median of SPHEREx's all-sky cube across every
-// visit and all 102 channels, from Daniel's science service. null target = not wanted now.
-export function useSpectralMap(targetId: string | null, attempt = 0): SpectralMap | null {
+// What to ask the service for: a built-in target by id, or any spot by position
+export type SpectralSubject = { target: string } | { ra: number; dec: number }
+
+const subjectParams = (s: SpectralSubject): Record<string, string> =>
+  'target' in s ? { target: s.target } : { ra: s.ra.toFixed(4), dec: s.dec.toFixed(4) }
+
+// The "All light" map for a target or spot: the median of SPHEREx's all-sky cube across every
+// visit and all 102 channels, from Daniel's science service. null = not wanted now.
+export function useSpectralMap(subject: SpectralSubject | null, attempt = 0): SpectralMap | null {
+  const params = subject ? subjectParams(subject) : null
+  const subjectKey = params ? new URLSearchParams(params).toString() : null
   const [result, setResult] = useState<{ key: string; map: SpectralMap } | null>(null)
-  const key = targetId ? `${targetId}#${attempt}` : null
+  const key = subjectKey ? `${subjectKey}#${attempt}` : null
 
   useEffect(() => {
-    if (!targetId || !key || ready.has(targetId)) return
+    if (!subjectKey || !key || ready.has(subjectKey)) return
     let cancelled = false
     let timer: ReturnType<typeof setTimeout> | undefined
     const set = (map: SpectralMap) => {
@@ -29,7 +37,9 @@ export function useSpectralMap(targetId: string | null, attempt = 0): SpectralMa
       let data: { status?: string; stage?: string; resultUrl?: string; error?: string }
       try {
         // retry=1 asks the service to try a failed field again (first request after Try again)
-        const query = new URLSearchParams({ target: targetId, radius: '30', z: '0' })
+        const query = new URLSearchParams(subjectKey)
+        query.set('radius', '30')
+        query.set('z', '0')
         if (first && attempt > 0) query.set('retry', '1')
         const response = await fetch(`/science/extract?${query}`)
         if (!(response.headers.get('Content-Type') ?? '').includes('application/json')) {
@@ -56,7 +66,7 @@ export function useSpectralMap(targetId: string | null, attempt = 0): SpectralMa
               true,
             )
             if (!url) return set({ status: 'error', message: 'No usable pixels in this field.' })
-            ready.set(targetId, url)
+            ready.set(subjectKey, url)
             return set({ status: 'ready', url })
           }
         } catch {
@@ -71,10 +81,10 @@ export function useSpectralMap(targetId: string | null, attempt = 0): SpectralMa
       cancelled = true
       clearTimeout(timer)
     }
-  }, [targetId, key, attempt])
+  }, [subjectKey, key, attempt])
 
-  if (!targetId) return null
-  const cached = ready.get(targetId)
+  if (!subjectKey) return null
+  const cached = ready.get(subjectKey)
   if (cached) return { status: 'ready', url: cached }
   return result?.key === key ? result.map : { status: 'loading' }
 }

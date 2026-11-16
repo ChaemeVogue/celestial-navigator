@@ -51,13 +51,17 @@ export default function App() {
       : null
   // The Spectral view: Daniel's science service makes maps from SPHEREx's all-sky cube
   const [spectralAttempt, setSpectralAttempt] = useState(0)
-  const showSpectral = explorer.view === 'spectral' && selected !== null
-  const spectralMap = useSpectralMap(showSpectral ? selected.id : null, spectralAttempt)
+  // A built-in target by its id; a fetched spot by its position
+  const showSpectral = explorer.view === 'spectral' && plateTarget !== null
+  const spectralMap = useSpectralMap(
+    !showSpectral ? null : selected ? { target: selected.id } : spot,
+    spectralAttempt,
+  )
   const view = showSpectral ? 'spectral' : showDifference ? 'difference' : 'blink'
 
   // What the plate shows instead of a pass, in the Difference and Spectral views
   let altImage: PlateImage | null = null
-  if (showSpectral && selected && spectralMap) {
+  if (showSpectral && plateTarget && spectralMap) {
     altImage = {
       status:
         spectralMap.status === 'ready'
@@ -67,7 +71,7 @@ export default function App() {
             : 'error',
       url: spectralMap.status === 'ready' ? spectralMap.url : undefined,
       badge: 'Spectral · All light',
-      alt: `Spectral map of ${selected.name}: all of SPHEREx’s colours and visits combined, dark purple faint to yellow bright`,
+      alt: `Spectral map of ${plateTarget.name}: all of SPHEREx’s colours and visits combined, dark purple faint to yellow bright`,
       loadingText: 'Building the spectral map…',
       errorText: 'The spectral map isn’t available right now.',
     }
