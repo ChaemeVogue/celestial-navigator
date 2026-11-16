@@ -12,6 +12,8 @@ export type Target = {
   kind: string // "face-on spiral galaxy"
   ra: number // decimal degrees, ICRS
   dec: number // decimal degrees, ICRS
+  // Built-in targets only; spots entered by coordinates have none.
+  type?: string // "Spiral galaxy": short, for the header (kind is the caption's longer phrase)
 }
 
 export type Pass = {

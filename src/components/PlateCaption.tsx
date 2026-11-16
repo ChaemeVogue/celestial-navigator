@@ -22,7 +22,7 @@ const lowerFirst = (label: string) => label.charAt(0).toLowerCase() + label.slic
 // "the Pinwheel Galaxy", "the Pleiades", but plain "Barnard’s Star" or "R Draconis":
 // only galaxies, nebulae, clusters and the two plural names take an article
 const withThe = (name: string) =>
-  /(Galaxy|Nebula|Cluster)$|^(Pleiades|Pillars)/.test(name) ? `the ${name}` : name
+  /(Galaxy|Nebula|Cluster|Cloud|Centre)$|^(Pleiades|Pillars)/.test(name) ? `the ${name}` : name
 
 export default function PlateCaption({
   target,
