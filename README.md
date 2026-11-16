@@ -30,15 +30,15 @@ modern version of the comparator Clyde Tombaugh used to find Pluto in 1930.
 
 ## Targets
 
-All 17 built-in targets are bundled with the app, so they work with no backend.
+All 19 built-in targets are bundled with the app, so they work with no backend.
 
 All use real SPHEREx data.
 
 - **Challenge test targets:** Barnard's Star, Epsilon Indi B, WISE 0855, RW Aurigae,
   R Draconis
-- **Showcase:** Luhman 16, M101, M104, M45 Pleiades, M1 Crab Nebula, M16 Pillars of
-  Creation, Horsehead Nebula, Rho Ophiuchi Cloud, M57 Ring Nebula, Galactic Centre,
-  Omega Centauri, M51 Whirlpool Galaxy
+- **Showcase:** Kapteyn's Star, Luhman 16, M101, M104, M45 Pleiades, M1 Crab Nebula,
+  M16 Pillars of Creation, Horsehead Nebula, Rho Ophiuchi Cloud, Tarantula Nebula,
+  M57 Ring Nebula, Galactic Centre, Omega Centauri, M51 Whirlpool Galaxy
 
 ## Quick start (front end only)
 
