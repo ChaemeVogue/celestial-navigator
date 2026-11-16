@@ -97,7 +97,6 @@ export default function PlateCaption({
         shown at {lowerFirst(pass.label)} ({passIndex + 1} of {total}). Distant stars and galaxies
         stay fixed; anything nearer that moves will shift between passes.
         {band && ` Showing detector ${band.band} alone (${band.wavelength}), in greyscale.`}
-        {passesData.simulated && ' These are simulated placeholder images, not SPHEREx data yet.'}
       </p>
       <p className="plate-caption__data">
         <span>RA {formatRA(target.ra)}</span>

@@ -30,13 +30,15 @@ modern version of the comparator Clyde Tombaugh used to find Pluto in 1930.
 
 ## Targets
 
-All 13 built-in targets are bundled with the app, so they work with no backend.
+All 17 built-in targets are bundled with the app, so they work with no backend.
 
-- **Challenge test targets (real data):** Barnard's Star, Epsilon Indi B, WISE 0855,
-  RW Aurigae, R Draconis
-- **Showcase (real data):** M101, M104, M45 Pleiades, M1 Crab Nebula, M16 Pillars of
-  Creation
-- **Simulated placeholders** (marked "Simulated" in the app): M31, M42, M51
+All use real SPHEREx data.
+
+- **Challenge test targets:** Barnard's Star, Epsilon Indi B, WISE 0855, RW Aurigae,
+  R Draconis
+- **Showcase:** Luhman 16, M101, M104, M45 Pleiades, M1 Crab Nebula, M16 Pillars of
+  Creation, Horsehead Nebula, Rho Ophiuchi Cloud, M57 Ring Nebula, Galactic Centre,
+  Omega Centauri, M51 Whirlpool Galaxy
 
 ## Quick start (front end only)
 
@@ -111,7 +113,6 @@ it's cached.
 | `npm run build`  | type-check and production build into `dist/` |
 | `npm run lint`   | oxlint                                       |
 | `npm run format` | Prettier                                     |
-| `npm run mocks`  | regenerate the simulated placeholder SVGs    |
 
 Processing a new built-in target, scouting a spot's coverage and rebuilding the preview
 report are covered in [pipeline/README.md](pipeline/README.md).
@@ -200,7 +201,7 @@ Before committing: `npm test && npm run build && npm run lint`.
 - Spots near the north ecliptic pole fail: only detectors D2 and D5 are released there.
 - Both Python services are local-only demos (no authentication, no disk limit).
 - Ideas: flip through single exposures within a pass (where asteroids show up), a
-  known-asteroid demo, process M31/M42/M51 for real, overlay Gaia DR3.
+  known-asteroid demo, overlay Gaia DR3.
 
 ## More docs
 

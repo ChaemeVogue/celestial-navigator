@@ -37,12 +37,12 @@ export default function App() {
   const plateTarget =
     selected ?? (spot && explorer.spotFetch.status === 'ready' ? spotAsTarget(spot) : null)
   const passes = explorer.passesData?.passes ?? []
-  // The chosen band applies only where single-detector images exist (not simulated targets).
+  // The chosen band applies only where single-detector images exist (see hasBandImages).
   const bandsAvailable = hasBandImages(passes)
   const band = bandsAvailable
     ? (explorer.colourKey.find((c) => c.band === explorer.band) ?? null)
     : null
-  // The Difference view needs single-detector images; simulated targets stay on Blink.
+  // The Difference view needs single-detector images; without them it stays on Blink.
   const comparison = explorer.comparison ?? (bandsAvailable ? defaultComparison(passes) : null)
   const showDifference = explorer.view === 'difference' && comparison !== null
   const [earlier, later] = comparison ? [passes[comparison.from], passes[comparison.to]] : []

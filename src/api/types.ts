@@ -20,7 +20,7 @@ export type Pass = {
   date: string // ISO 8601: the visit's mean observation time, from time_bounds_lower (MJD)
   imageUrl: string // processed, browser-ready image (square PNG/WebP)
   // Each detector alone as a greyscale image, keyed by ColourKeyEntry.band ("D1").
-  // A band is missing when the visit has no images in it. Omitted for simulated targets.
+  // A band is missing when the visit has no images in it. Omitted when no visit has single-detector images.
   bandImageUrls?: Record<string, string>
   // A brief revisit (about a day, few images, sometimes missing a band) between full passes.
   short?: boolean
@@ -39,8 +39,6 @@ export type PassesResponse = {
   fieldSizeDeg: number // width of the square image on the sky (0.1)
   passes: Pass[] // sorted oldest → newest
   candidates: Candidate[]
-  // Mock data only: placeholder images, not real SPHEREx data. The backend never sets this.
-  simulated?: boolean
 }
 
 export type ColourKeyEntry = {

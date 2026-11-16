@@ -24,6 +24,14 @@
     "dec": -7.24218
   },
   {
+    "id": "luhman16",
+    "messier": "WISE 1049−5319",
+    "name": "Luhman 16",
+    "kind": "pair of brown dwarfs, the nearest to the Sun",
+    "ra": 162.2947,
+    "dec": -53.31683
+  },
+  {
     "id": "rwaur",
     "messier": "RW Aur",
     "name": "RW Aurigae",
@@ -80,20 +88,44 @@
     "dec": -13.835
   },
   {
-    "id": "m31",
-    "messier": "M31",
-    "name": "Andromeda Galaxy",
-    "kind": "large spiral galaxy",
-    "ra": 10.6847,
-    "dec": 41.2688
+    "id": "horsehead",
+    "messier": "B33",
+    "name": "Horsehead Nebula",
+    "kind": "dark dust cloud against glowing gas",
+    "ra": 85.2458,
+    "dec": -2.4583
   },
   {
-    "id": "m42",
-    "messier": "M42",
-    "name": "Orion Nebula",
-    "kind": "star-forming nebula",
-    "ra": 83.8221,
-    "dec": -5.3911
+    "id": "rhooph",
+    "messier": "ρ Oph",
+    "name": "Rho Ophiuchi Cloud",
+    "kind": "dusty cloud where new stars are forming",
+    "ra": 246.79,
+    "dec": -24.47
+  },
+  {
+    "id": "m57",
+    "messier": "M57",
+    "name": "Ring Nebula",
+    "kind": "shell of gas thrown off by a dying star",
+    "ra": 283.39625,
+    "dec": 33.02917
+  },
+  {
+    "id": "galcentre",
+    "messier": "Sgr A*",
+    "name": "Galactic Centre",
+    "kind": "the crowded heart of our galaxy",
+    "ra": 266.417,
+    "dec": -29.008
+  },
+  {
+    "id": "omegacen",
+    "messier": "NGC 5139",
+    "name": "Omega Centauri",
+    "kind": "giant globular cluster of millions of stars",
+    "ra": 201.69683,
+    "dec": -47.47958
   },
   {
     "id": "m51",
