@@ -119,8 +119,8 @@ export default function ColourKeyPanel({ entries, band, bandsAvailable, onBandCh
         <div className="colour-key__note">
           <h3 className="label">Why false colour?</h3>
           <p>
-            SPHEREx sees infrared light, which human eyes can’t, so each band is shown as a colour we
-            can see. A spot that looks amber is brightest at the longest wavelengths, often warm
+            SPHEREx sees infrared light, which human eyes can’t, so each band is shown as a colour
+            we can see. A spot that looks amber is brightest at the longest wavelengths, often warm
             dust.
           </p>
         </div>
