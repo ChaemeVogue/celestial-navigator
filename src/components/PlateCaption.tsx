@@ -1,4 +1,5 @@
 import type { ColourKeyEntry, Pass, PassesResponse, Target } from '../api/types'
+import type { SpectralLayer } from '../utils/spectralLayers'
 import { formatDec, formatRA } from '../utils/coords'
 import './PlateCaption.css'
 
@@ -9,7 +10,7 @@ type Props = {
   colourKey: ColourKeyEntry[]
   band: ColourKeyEntry | null // null = colour composite
   difference?: { from: Pass; to: Pass; band: string } | null // set in the Difference view
-  spectral?: boolean // the Spectral view (All light)
+  spectral?: SpectralLayer | null // the Spectral view, and which map
 }
 
 // "a face-on spiral galaxy", "an open star cluster"
@@ -30,7 +31,7 @@ export default function PlateCaption({
   colourKey,
   band,
   difference = null,
-  spectral = false,
+  spectral = null,
 }: Props) {
   const pass = passesData?.passes[passIndex]
 
@@ -47,8 +48,9 @@ export default function PlateCaption({
     return (
       <div className="plate-caption">
         <p className="plate-caption__text">
-          Spectral map, all light: every SPHEREx visit and all 102 of its colours combined into one
-          picture of how bright the field is. Dark purple is faint, yellow is bright.
+          {spectral.id === 'all'
+            ? 'Spectral map, all light: every SPHEREx visit and all 102 of its colours combined into one picture of how bright the field is. Dark purple is faint, yellow is bright.'
+            : `Spectral map, ${spectral.title.toLowerCase()} (${spectral.wavelength}): ${spectral.explain} An exploratory hint, not a confirmed detection.`}
         </p>
         <p className="plate-caption__data">
           <span>RA {formatRA(target.ra)}</span>

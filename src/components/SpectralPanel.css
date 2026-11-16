@@ -14,13 +14,33 @@
 .spectral__option {
   min-height: var(--tap);
   padding: 0 14px;
-  background: rgba(201, 165, 90, 0.14);
-  border: 1px solid var(--brass);
+  background: transparent;
+  border: 1px solid var(--border-faint);
   font-family: var(--font-ui);
   font-size: var(--fs-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
+  color: var(--brass-light);
+}
+
+.spectral__option:hover:not(:disabled) {
+  border-color: var(--brass);
+}
+
+.spectral__option[aria-pressed='true'] {
+  background: rgba(201, 165, 90, 0.14);
+  border-color: var(--brass);
+}
+
+.spectral__option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spectral__hint strong {
+  font-style: normal;
+  font-weight: 500;
   color: var(--brass-light);
 }
 

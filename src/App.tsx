@@ -16,6 +16,8 @@ import { defaultComparison, nearestTarget, spotAsTarget, useExplorer } from './h
 import { useDifferenceImage } from './hooks/useDifferenceImage'
 import { useSpectralMap } from './hooks/useSpectralMap'
 import type { PlateImage } from './components/SkyPlate'
+import { layerById } from './utils/spectralLayers'
+import type { SpectralLayerId } from './utils/spectralLayers'
 import { usePreloadImages } from './hooks/usePreloadImages'
 import { useUrlState } from './hooks/useUrlState'
 import { hasBandImages, imageForBand } from './utils/bands'
@@ -51,6 +53,8 @@ export default function App() {
       : null
   // The Spectral view: Daniel's science service makes maps from SPHEREx's all-sky cube
   const [spectralAttempt, setSpectralAttempt] = useState(0)
+  const [spectralLayerId, setSpectralLayerId] = useState<SpectralLayerId>('all')
+  const spectralLayer = layerById(spectralLayerId)
   // A built-in target by its id; a fetched spot by its position
   const showSpectral = explorer.view === 'spectral' && plateTarget !== null
   const spectralMap = useSpectralMap(
@@ -69,9 +73,9 @@ export default function App() {
           : spectralMap.status === 'loading'
             ? 'loading'
             : 'error',
-      url: spectralMap.status === 'ready' ? spectralMap.url : undefined,
-      badge: 'Spectral · All light',
-      alt: `Spectral map of ${plateTarget.name}: all of SPHEREx’s colours and visits combined, dark purple faint to yellow bright`,
+      url: spectralMap.status === 'ready' ? spectralMap.images[spectralLayer.id] : undefined,
+      badge: `Spectral · ${spectralLayer.button}`,
+      alt: `Spectral map of ${plateTarget.name}, ${spectralLayer.title}: ${spectralLayer.explain}`,
       loadingText: 'Building the spectral map…',
       errorText: 'The spectral map isn’t available right now.',
     }
@@ -160,13 +164,15 @@ export default function App() {
                   colourKey={explorer.colourKey}
                   band={band}
                   difference={showSpectral ? null : difference}
-                  spectral={showSpectral}
+                  spectral={showSpectral ? spectralLayer : null}
                 />
               </div>
               <aside className="side-column" aria-label="Timeframes and colour key">
                 {showSpectral && spectralMap ? (
                   <SpectralPanel
                     map={spectralMap}
+                    layer={spectralLayer.id}
+                    onLayerChange={setSpectralLayerId}
                     onRetry={() => setSpectralAttempt((n) => n + 1)}
                   />
                 ) : showDifference && comparison ? (
