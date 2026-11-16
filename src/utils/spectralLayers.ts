@@ -42,8 +42,8 @@ export const SPECTRAL_LAYERS: SpectralLayer[] = [
     wavelength: '3.05 µm',
     explain:
       'Water ice on cold dust grains soaks up light at 3.05 µm. Brighter means more of that light is missing: a hint of ice.',
-    low: 'Little missing',
-    high: 'More missing',
+    low: 'Weaker hint',
+    high: 'Stronger hint',
     logarithmic: false,
   },
   {
@@ -53,8 +53,8 @@ export const SPECTRAL_LAYERS: SpectralLayer[] = [
     wavelength: '4.27 µm',
     explain:
       'Frozen carbon dioxide soaks up light at 4.27 µm. Brighter means more of that light is missing.',
-    low: 'Little missing',
-    high: 'More missing',
+    low: 'Weaker hint',
+    high: 'Stronger hint',
     logarithmic: false,
   },
   {
@@ -64,8 +64,8 @@ export const SPECTRAL_LAYERS: SpectralLayer[] = [
     wavelength: '4.67 µm',
     explain:
       'Frozen carbon monoxide, found only in the coldest places, soaks up light at 4.67 µm. Brighter means more of that light is missing.',
-    low: 'Little missing',
-    high: 'More missing',
+    low: 'Weaker hint',
+    high: 'Stronger hint',
     logarithmic: false,
   },
 ]

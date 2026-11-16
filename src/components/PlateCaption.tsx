@@ -50,7 +50,7 @@ export default function PlateCaption({
         <p className="plate-caption__text">
           {spectral.id === 'all'
             ? 'Spectral map, all light: every SPHEREx visit and all 102 of its colours combined into one picture of how bright the field is. Dark purple is faint, yellow is bright.'
-            : `Spectral map, ${spectral.title.toLowerCase()} (${spectral.wavelength}): ${spectral.explain} An exploratory hint, not a confirmed detection.`}
+            : `Spectral map · ${spectral.title.toLowerCase()}, ${spectral.wavelength} · an exploratory hint, not a confirmed detection.`}
         </p>
         <p className="plate-caption__data">
           <span>RA {formatRA(target.ra)}</span>

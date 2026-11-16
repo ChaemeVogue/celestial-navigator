@@ -20,8 +20,8 @@ function Status({ map, onRetry }: Pick<Props, 'map' | 'onRetry'>) {
   if (map.status === 'loading') {
     return (
       <p className="spectral__status" role="status">
-        Building the spectral map from SPHEREx’s all-sky cube… The first time for a target takes
-        about half a minute; after that it’s instant.
+        Building the spectral map from SPHEREx’s all-sky cube… The first time for a new place takes
+        up to a minute; after that it’s instant.
       </p>
     )
   }
@@ -69,8 +69,7 @@ export default function SpectralPanel({ map, layer, onLayerChange, onRetry }: Pr
         Spectral Map
       </h2>
       <p className="panel-intro">
-        SPHEREx photographs the sky in 102 colours of infrared light. These maps come from its
-        all-sky cube, which stacks every visit together.
+        Maps from SPHEREx’s 102 colours of infrared light, with every visit stacked together.
       </p>
 
       <div className="spectral__group">
@@ -108,9 +107,7 @@ export default function SpectralPanel({ map, layer, onLayerChange, onRetry }: Pr
           <span>{current.high}</span>
         </p>
         <p className="spectral__hint">
-          {current.logarithmic
-            ? 'A logarithmic scale, so faint glow and bright stars both show.'
-            : 'Scaled to this field: the faintest 5% and brightest 0.5% are clipped.'}{' '}
+          Colours are scaled to each map, so compare places within one map, not between targets.
           Grey means no data.
         </p>
       </div>
@@ -119,15 +116,13 @@ export default function SpectralPanel({ map, layer, onLayerChange, onRetry }: Pr
         <h3 className="label">Good to know</h3>
         {current.id === 'all' ? (
           <p>
-            Because every visit is stacked together, nothing moves here: use Blink and Difference to
-            hunt for movers. The map is 64 pixels across, so it’s softer than the plates.
+            Every visit is stacked, so nothing moves here. Hunt for movers with Blink and
+            Difference.
           </p>
         ) : (
           <p>
-            Water, carbon and these ices are raw ingredients of planets, and of life as we know it.
-            These maps are exploratory hints, not confirmed detections: dust, starlight and stripes
-            in the data can look similar. Cold, dusty clouds where stars are forming are the most
-            likely places to see them.
+            Water, carbon and ice are ingredients of planets and life. These maps are hints, not
+            detections: dust and stripes in the data can look alike.
           </p>
         )}
       </div>

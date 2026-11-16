@@ -75,7 +75,7 @@ export default function App() {
             : 'error',
       url: spectralMap.status === 'ready' ? spectralMap.images[spectralLayer.id] : undefined,
       badge: `Spectral · ${spectralLayer.button}`,
-      alt: `Spectral map of ${plateTarget.name}, ${spectralLayer.title}: ${spectralLayer.explain}`,
+      alt: `Spectral map of ${plateTarget.name}: ${spectralLayer.title.toLowerCase()}`,
       loadingText: 'Building the spectral map…',
       errorText: 'The spectral map isn’t available right now.',
     }
