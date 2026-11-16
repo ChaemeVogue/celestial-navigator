@@ -203,6 +203,9 @@ Before committing: `npm test && npm run build && npm run lint`.
 - Ideas: flip through single exposures within a pass (where asteroids show up), a
   known-asteroid demo, overlay Gaia DR3.
 
+## Final Notes
+- Super Intelligence was used for coding, debugging, and troubleshooting
+
 ## More docs
 
 - [docs/backend-notes.md](docs/backend-notes.md): the data contract, on-demand backend
